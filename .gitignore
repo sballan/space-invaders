@@ -9,3 +9,19 @@
 _fresh/
 # npm dependencies
 node_modules/
+
+# Temporary development files
+temp/
+screenshots/
+test-*.js
+test-*.html
+debug-*.html
+*.test.png
+*.debug.png
+
+# Playwright browser downloads
+playwright-*
+
+# Development artifacts
+.DS_Store
+*.log

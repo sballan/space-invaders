@@ -23,8 +23,8 @@ Before asking the user to verify changes in their browser:
 
 1. **Use Playwright for Verification**: When you want to know if a change was
    successful, use Playwright to test the functionality automatically
-2. **Create Test Scripts**: Write Playwright test scripts to verify:
-   - Visual rendering (screenshots)
+2. **Create Test Scripts**: Write Playwright test scripts in `temp/tests/` to verify:
+   - Visual rendering (screenshots saved to `temp/screenshots/`)
    - Canvas pixel analysis
    - Game functionality
    - User interactions
@@ -32,7 +32,7 @@ Before asking the user to verify changes in their browser:
 Example Playwright verification:
 
 ```javascript
-// Create test script to verify changes
+// Create test script in temp/tests/verify-feature.js
 import { chromium } from "npm:playwright@1.40.0";
 
 async function verifyChange() {
@@ -42,10 +42,18 @@ async function verifyChange() {
   await page.goto("http://localhost:8000");
   // ... test the specific change
 
-  await page.screenshot({ path: "verification.png" });
+  await page.screenshot({ path: "temp/screenshots/verification.png" });
   await browser.close();
 }
 ```
+
+### Temporary File Organization
+
+- `temp/tests/` - Playwright verification scripts
+- `temp/screenshots/` - Visual verification screenshots
+- `temp/debug/` - Debug HTML tools and diagnostic files
+
+All files in `temp/` directory are gitignored and safe to create/delete.
 
 ### Development Server
 
