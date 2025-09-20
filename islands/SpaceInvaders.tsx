@@ -19,7 +19,9 @@ interface Invader {
 
 export default function SpaceInvaders() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [gameState, setGameState] = useState<"playing" | "gameover" | "win">("playing");
+  const [gameState, setGameState] = useState<"playing" | "gameover" | "win">(
+    "playing",
+  );
   const [score, setScore] = useState(0);
   const playerRef = useRef<Position>({ x: 375, y: 520 });
   const bulletsRef = useRef<Bullet[]>([]);
@@ -61,7 +63,7 @@ export default function SpaceInvaders() {
     };
 
     const shootBullet = () => {
-      const activeBullets = bulletsRef.current.filter(b => b.active);
+      const activeBullets = bulletsRef.current.filter((b) => b.active);
       if (activeBullets.length < 3) {
         bulletsRef.current.push({
           x: playerRef.current.x + 20,
@@ -72,9 +74,10 @@ export default function SpaceInvaders() {
     };
 
     const invaderShoot = () => {
-      const aliveInvaders = invadersRef.current.filter(inv => inv.alive);
+      const aliveInvaders = invadersRef.current.filter((inv) => inv.alive);
       if (aliveInvaders.length > 0 && Math.random() < 0.02) {
-        const shooter = aliveInvaders[Math.floor(Math.random() * aliveInvaders.length)];
+        const shooter =
+          aliveInvaders[Math.floor(Math.random() * aliveInvaders.length)];
         invaderBulletsRef.current.push({
           x: shooter.x + 15,
           y: shooter.y + 20,
@@ -102,7 +105,7 @@ export default function SpaceInvaders() {
       ctx.fillRect(playerRef.current.x + 15, playerRef.current.y - 10, 10, 10);
 
       // Update and draw bullets
-      bulletsRef.current = bulletsRef.current.filter(bullet => {
+      bulletsRef.current = bulletsRef.current.filter((bullet) => {
         if (!bullet.active) return false;
 
         bullet.y -= 8;
@@ -113,12 +116,14 @@ export default function SpaceInvaders() {
 
         // Check collision with invaders
         for (const invader of invadersRef.current) {
-          if (invader.alive &&
-              bullet.x > invader.x && bullet.x < invader.x + 30 &&
-              bullet.y > invader.y && bullet.y < invader.y + 20) {
+          if (
+            invader.alive &&
+            bullet.x > invader.x && bullet.x < invader.x + 30 &&
+            bullet.y > invader.y && bullet.y < invader.y + 20
+          ) {
             invader.alive = false;
             bullet.active = false;
-            setScore(prev => prev + 10);
+            setScore((prev) => prev + 10);
             return false;
           }
         }
@@ -130,7 +135,7 @@ export default function SpaceInvaders() {
 
       // Update invaders
       let shouldMoveDown = false;
-      const aliveInvaders = invadersRef.current.filter(inv => inv.alive);
+      const aliveInvaders = invadersRef.current.filter((inv) => inv.alive);
 
       if (aliveInvaders.length === 0) {
         setGameState("win");
@@ -138,8 +143,10 @@ export default function SpaceInvaders() {
       }
 
       for (const invader of aliveInvaders) {
-        if ((invader.x <= 10 && invaderDirectionRef.current < 0) ||
-            (invader.x >= 760 && invaderDirectionRef.current > 0)) {
+        if (
+          (invader.x <= 10 && invaderDirectionRef.current < 0) ||
+          (invader.x >= 760 && invaderDirectionRef.current > 0)
+        ) {
           shouldMoveDown = true;
           break;
         }
@@ -182,7 +189,7 @@ export default function SpaceInvaders() {
       invaderShoot();
 
       // Update and draw invader bullets
-      invaderBulletsRef.current = invaderBulletsRef.current.filter(bullet => {
+      invaderBulletsRef.current = invaderBulletsRef.current.filter((bullet) => {
         if (!bullet.active) return false;
 
         bullet.y += 4;
@@ -192,8 +199,11 @@ export default function SpaceInvaders() {
         }
 
         // Check collision with player
-        if (bullet.x > playerRef.current.x && bullet.x < playerRef.current.x + 40 &&
-            bullet.y > playerRef.current.y && bullet.y < playerRef.current.y + 30) {
+        if (
+          bullet.x > playerRef.current.x &&
+          bullet.x < playerRef.current.x + 40 &&
+          bullet.y > playerRef.current.y && bullet.y < playerRef.current.y + 30
+        ) {
           setGameState("gameover");
           return false;
         }
@@ -259,7 +269,8 @@ export default function SpaceInvaders() {
       <div class="controls">
         <p>Use Arrow Keys to move, Space to shoot</p>
       </div>
-      <style>{`
+      <style>
+        {`
         .game-container {
           display: flex;
           flex-direction: column;
@@ -313,7 +324,8 @@ export default function SpaceInvaders() {
           margin-top: 20px;
           color: #666;
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 }

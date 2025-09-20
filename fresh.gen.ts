@@ -5,10 +5,12 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_joke from "./routes/api/joke.ts";
+import * as $debug from "./routes/debug.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $SpaceInvaders from "./islands/SpaceInvaders.tsx";
+import * as $SpaceInvadersWebGL from "./islands/SpaceInvadersWebGL.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -16,12 +18,14 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/api/joke.ts": $api_joke,
+    "./routes/debug.tsx": $debug,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,
   },
   islands: {
     "./islands/Counter.tsx": $Counter,
     "./islands/SpaceInvaders.tsx": $SpaceInvaders,
+    "./islands/SpaceInvadersWebGL.tsx": $SpaceInvadersWebGL,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
