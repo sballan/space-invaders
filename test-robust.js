@@ -2,7 +2,7 @@
  * Robust Playwright test for Space Invaders game
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testGame() {
   let browser;
@@ -10,67 +10,70 @@ async function testGame() {
 
   try {
     // First check if server is responding
-    console.log('Checking server availability...');
-    const response = await fetch('http://localhost:8001');
+    console.log("Checking server availability...");
+    const response = await fetch("http://localhost:8001");
     if (!response.ok) {
       throw new Error(`Server not responding: ${response.status}`);
     }
-    console.log('✅ Server is responding');
+    console.log("✅ Server is responding");
 
     // Launch browser with more stable options
-    console.log('Launching browser...');
+    console.log("Launching browser...");
     browser = await chromium.launch({
       headless: false,
       args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-web-security'
-      ]
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-web-security",
+      ],
     });
 
     const context = await browser.newContext({
-      viewport: { width: 1200, height: 800 }
+      viewport: { width: 1200, height: 800 },
     });
 
     page = await context.newPage();
 
     // Add error handling for page errors
-    page.on('pageerror', error => {
-      console.log('Page error:', error.message);
+    page.on("pageerror", (error) => {
+      console.log("Page error:", error.message);
     });
 
-    page.on('console', msg => {
-      if (msg.type() === 'error') {
-        console.log('Console error:', msg.text());
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        console.log("Console error:", msg.text());
       }
     });
 
     // Navigate to game
-    console.log('Navigating to game...');
-    await page.goto('http://localhost:8001', {
-      waitUntil: 'networkidle',
-      timeout: 30000
+    console.log("Navigating to game...");
+    await page.goto("http://localhost:8001", {
+      waitUntil: "networkidle",
+      timeout: 30000,
     });
 
     // Wait for canvas
-    console.log('Waiting for canvas element...');
-    await page.waitForSelector('canvas.game-canvas', { timeout: 15000 });
+    console.log("Waiting for canvas element...");
+    await page.waitForSelector("canvas.game-canvas", { timeout: 15000 });
 
     // Wait for initialization
-    console.log('Waiting for game initialization...');
+    console.log("Waiting for game initialization...");
     await page.waitForTimeout(4000);
 
     // Take initial screenshot
     await page.screenshot({
-      path: 'screenshots/initial-state.png',
-      fullPage: false
+      path: "screenshots/initial-state.png",
+      fullPage: false,
     });
-    console.log('📸 Initial screenshot saved');
+    console.log("📸 Initial screenshot saved");
 
     // Start the game
-    console.log('Starting game...');
-    const startButton = await page.waitForSelector('button:has-text("Start Game")', { timeout: 5000 });
+    console.log("Starting game...");
+    const startButton = await page.waitForSelector(
+      'button:has-text("Start Game")',
+      { timeout: 5000 },
+    );
     await startButton.click();
 
     // Wait for game to start
@@ -78,19 +81,19 @@ async function testGame() {
 
     // Take game started screenshot
     await page.screenshot({
-      path: 'screenshots/game-started.png',
-      fullPage: false
+      path: "screenshots/game-started.png",
+      fullPage: false,
     });
-    console.log('📸 Game started screenshot saved');
+    console.log("📸 Game started screenshot saved");
 
     // Analyze canvas pixels
-    console.log('Analyzing canvas pixels...');
+    console.log("Analyzing canvas pixels...");
     const pixelAnalysis = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      if (!canvas) return { error: 'Canvas not found' };
+      const canvas = document.querySelector("canvas.game-canvas");
+      if (!canvas) return { error: "Canvas not found" };
 
-      const gl = canvas.getContext('webgl2');
-      if (!gl) return { error: 'WebGL not available' };
+      const gl = canvas.getContext("webgl2");
+      if (!gl) return { error: "WebGL not available" };
 
       // Read pixels
       const width = canvas.width;
@@ -136,65 +139,64 @@ async function testGame() {
         bluePixels,
         otherColors,
         percentColored: ((coloredPixels / totalPixels) * 100).toFixed(2),
-        gameVisible: coloredPixels > 100
+        gameVisible: coloredPixels > 100,
       };
     });
 
-    console.log('🎯 Canvas Analysis Results:');
+    console.log("🎯 Canvas Analysis Results:");
     console.log(JSON.stringify(pixelAnalysis, null, 2));
 
     // Test game interactions
     if (pixelAnalysis.gameVisible) {
-      console.log('✅ Game is visible! Testing interactions...');
+      console.log("✅ Game is visible! Testing interactions...");
 
       // Test movement
-      console.log('Testing left movement...');
-      await page.keyboard.press('ArrowLeft');
+      console.log("Testing left movement...");
+      await page.keyboard.press("ArrowLeft");
       await page.waitForTimeout(500);
 
-      console.log('Testing right movement...');
-      await page.keyboard.press('ArrowRight');
+      console.log("Testing right movement...");
+      await page.keyboard.press("ArrowRight");
       await page.waitForTimeout(500);
 
       // Test shooting
-      console.log('Testing shooting...');
-      await page.keyboard.press('Space');
+      console.log("Testing shooting...");
+      await page.keyboard.press("Space");
       await page.waitForTimeout(1000);
 
       // Take final screenshot
       await page.screenshot({
-        path: 'screenshots/after-interactions.png',
-        fullPage: false
+        path: "screenshots/after-interactions.png",
+        fullPage: false,
       });
-      console.log('📸 Final screenshot saved');
+      console.log("📸 Final screenshot saved");
 
-      console.log('🎮 GAME TEST COMPLETE - Game is working!');
+      console.log("🎮 GAME TEST COMPLETE - Game is working!");
     } else {
-      console.log('❌ Game sprites not visible on canvas');
+      console.log("❌ Game sprites not visible on canvas");
     }
 
     // Keep browser open briefly for manual inspection
-    console.log('Keeping browser open for 5 seconds...');
+    console.log("Keeping browser open for 5 seconds...");
     await page.waitForTimeout(5000);
-
   } catch (error) {
-    console.error('❌ Test failed:', error.message);
+    console.error("❌ Test failed:", error.message);
 
     if (page) {
       try {
-        await page.screenshot({ path: 'screenshots/error-state.png' });
-        console.log('📸 Error screenshot saved');
+        await page.screenshot({ path: "screenshots/error-state.png" });
+        console.log("📸 Error screenshot saved");
       } catch (screenshotError) {
-        console.log('Could not take error screenshot');
+        console.log("Could not take error screenshot");
       }
     }
   } finally {
     if (browser) {
-      console.log('Closing browser...');
+      console.log("Closing browser...");
       try {
         await browser.close();
       } catch (closeError) {
-        console.log('Browser close error (this is normal)');
+        console.log("Browser close error (this is normal)");
       }
     }
   }
@@ -202,10 +204,10 @@ async function testGame() {
 
 // Create screenshots directory if it doesn't exist
 try {
-  await Deno.mkdir('screenshots', { recursive: true });
+  await Deno.mkdir("screenshots", { recursive: true });
 } catch (e) {
   // Directory already exists
 }
 
-console.log('🚀 Starting Space Invaders game test...');
+console.log("🚀 Starting Space Invaders game test...");
 testGame();

@@ -2,27 +2,27 @@
  * Test magenta debug shader - attempt 23
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testMagenta() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 23: Testing magenta debug shader...');
+    console.log("🚀 Attempt 23: Testing magenta debug shader...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8000');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8000");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(3000);
 
     await page.click('button:has-text("Start Game")');
     await page.waitForTimeout(4000);
 
     const result = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       const pixels = new Uint8Array(800 * 600 * 4);
       gl.readPixels(0, 0, 800, 600, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -56,12 +56,12 @@ async function testMagenta() {
 
       // Check specific areas for magenta
       const areas = [
-        { x: 400, y: 500, name: 'player' },
-        { x: 75, y: 100, name: 'invader1' },
-        { x: 200, y: 150, name: 'invader2' }
+        { x: 400, y: 500, name: "player" },
+        { x: 75, y: 100, name: "invader1" },
+        { x: 200, y: 150, name: "invader2" },
       ];
 
-      const areaColors = areas.map(area => {
+      const areaColors = areas.map((area) => {
         const i = (area.y * 800 + area.x) * 4;
         const rgba = [pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]];
         const isMagenta = rgba[0] > 200 && rgba[2] > 200 && rgba[1] < 100;
@@ -69,7 +69,7 @@ async function testMagenta() {
           area: area.name,
           position: `${area.x},${area.y}`,
           rgba,
-          isMagenta
+          isMagenta,
         };
       });
 
@@ -80,32 +80,35 @@ async function testMagenta() {
         greenPixels,
         bluePixels,
         areaColors,
-        percentageColored: ((totalColoredPixels / (800 * 600)) * 100).toFixed(3),
-        magentaShaderWorked: magentaPixels > 1000
+        percentageColored: ((totalColoredPixels / (800 * 600)) * 100).toFixed(
+          3,
+        ),
+        magentaShaderWorked: magentaPixels > 1000,
       };
     });
 
-    console.log('🎨 MAGENTA SHADER RESULTS:');
+    console.log("🎨 MAGENTA SHADER RESULTS:");
     console.log(JSON.stringify(result, null, 2));
 
     if (result.magentaShaderWorked) {
-      console.log('🎉 ULTIMATE SUCCESS! Magenta shader worked!');
+      console.log("🎉 ULTIMATE SUCCESS! Magenta shader worked!");
       console.log(`💜 Found ${result.magentaPixels} magenta pixels!`);
-      console.log('🎮 Game engine rendering pipeline is working!');
+      console.log("🎮 Game engine rendering pipeline is working!");
     } else {
-      console.log('❌ Even magenta shader failed');
+      console.log("❌ Even magenta shader failed");
       console.log(`Total colored: ${result.totalColoredPixels}`);
     }
 
-    await page.screenshot({ path: 'screenshots/magenta-test.png' });
+    await page.screenshot({ path: "screenshots/magenta-test.png" });
     await browser.close();
 
     return result.magentaShaderWorked;
-
   } catch (error) {
-    console.log('❌ Magenta test failed:', error.message);
+    console.log("❌ Magenta test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
     return false;
   }

@@ -2,27 +2,27 @@
  * Test game with magenta shader - attempt 25
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testGameMagenta() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 25: Testing game with magenta shader...');
+    console.log("🚀 Attempt 25: Testing game with magenta shader...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8000');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8000");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(4000); // Longer wait for shader compilation
 
     await page.click('button:has-text("Start Game")');
     await page.waitForTimeout(5000); // Wait longer for rendering
 
     const result = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       const pixels = new Uint8Array(800 * 600 * 4);
       gl.readPixels(0, 0, 800, 600, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -61,34 +61,40 @@ async function testGameMagenta() {
         totalColoredPixels,
         magentaPixels,
         sampleColoredPoints: samplePoints.slice(0, 10), // First 10 colored points
-        percentageColored: ((totalColoredPixels / (800 * 600)) * 100).toFixed(3),
-        gameMagentaWorked: magentaPixels > 100
+        percentageColored: ((totalColoredPixels / (800 * 600)) * 100).toFixed(
+          3,
+        ),
+        gameMagentaWorked: magentaPixels > 100,
       };
     });
 
-    console.log('💜 GAME MAGENTA RESULTS:');
+    console.log("💜 GAME MAGENTA RESULTS:");
     console.log(JSON.stringify(result, null, 2));
 
     if (result.gameMagentaWorked) {
-      console.log('🏆 GAME ENGINE SUCCESS! Magenta sprites visible!');
+      console.log("🏆 GAME ENGINE SUCCESS! Magenta sprites visible!");
       console.log(`💜 Found ${result.magentaPixels} magenta pixels from game!`);
     } else {
-      console.log('❌ Game magenta shader failed');
+      console.log("❌ Game magenta shader failed");
       console.log(`Total colored pixels: ${result.totalColoredPixels}`);
       if (result.sampleColoredPoints.length > 0) {
-        console.log('But found some colored points:', result.sampleColoredPoints);
+        console.log(
+          "But found some colored points:",
+          result.sampleColoredPoints,
+        );
       }
     }
 
-    await page.screenshot({ path: 'screenshots/game-magenta.png' });
+    await page.screenshot({ path: "screenshots/game-magenta.png" });
     await browser.close();
 
     return result.gameMagentaWorked;
-
   } catch (error) {
-    console.log('❌ Game magenta test failed:', error.message);
+    console.log("❌ Game magenta test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
     return false;
   }

@@ -60,16 +60,22 @@ export class SpaceInvadersSystem extends BaseSystem {
   /**
    * Updates invader formation movement
    */
-  private updateInvaderMovement(deltaTime: number, entityManager: EntityManager): void {
+  private updateInvaderMovement(
+    deltaTime: number,
+    entityManager: EntityManager,
+  ): void {
     this.invaderMoveTimer += deltaTime;
 
     if (this.invaderMoveTimer >= GAME_CONFIG.INVADER_MOVE_INTERVAL) {
       this.invaderMoveTimer = 0;
 
-      const invaders = entityManager.getEntitiesWithComponents("collision").filter(entity => {
-        const collision = entity.getComponent<import("../engine/core/component.ts").CollisionComponent>("collision")!;
-        return collision.layers.includes("enemy");
-      });
+      const invaders = entityManager.getEntitiesWithComponents("collision")
+        .filter((entity) => {
+          const collision = entity.getComponent<
+            import("../engine/core/component.ts").CollisionComponent
+          >("collision")!;
+          return collision.layers.includes("enemy");
+        });
 
       if (invaders.length === 0) return;
 
@@ -77,10 +83,15 @@ export class SpaceInvadersSystem extends BaseSystem {
 
       // Check if any invader hit the screen edge
       for (const invader of invaders) {
-        const position = invader.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
+        const position = invader.getComponent<
+          import("../engine/core/component.ts").PositionComponent
+        >("position")!;
 
-        if ((position.position.x <= 50 && this.invaderDirection < 0) ||
-            (position.position.x >= GAME_CONFIG.SCREEN_WIDTH - 50 && this.invaderDirection > 0)) {
+        if (
+          (position.position.x <= 50 && this.invaderDirection < 0) ||
+          (position.position.x >= GAME_CONFIG.SCREEN_WIDTH - 50 &&
+            this.invaderDirection > 0)
+        ) {
           shouldMoveDown = true;
           break;
         }
@@ -88,12 +99,15 @@ export class SpaceInvadersSystem extends BaseSystem {
 
       // Move all invaders
       for (const invader of invaders) {
-        const position = invader.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
+        const position = invader.getComponent<
+          import("../engine/core/component.ts").PositionComponent
+        >("position")!;
 
         if (shouldMoveDown) {
           position.position.y += GAME_CONFIG.INVADER_DROP_SPEED;
         } else {
-          position.position.x += this.invaderDirection * GAME_CONFIG.INVADER_SPEED;
+          position.position.x += this.invaderDirection *
+            GAME_CONFIG.INVADER_SPEED;
         }
       }
 
@@ -107,16 +121,22 @@ export class SpaceInvadersSystem extends BaseSystem {
   /**
    * Updates invader shooting
    */
-  private updateInvaderShooting(deltaTime: number, entityManager: EntityManager): void {
+  private updateInvaderShooting(
+    deltaTime: number,
+    entityManager: EntityManager,
+  ): void {
     this.invaderShootTimer += deltaTime;
 
     if (this.invaderShootTimer >= GAME_CONFIG.INVADER_SHOOT_INTERVAL) {
       this.invaderShootTimer = 0;
 
-      const invaders = entityManager.getEntitiesWithComponents("collision").filter(entity => {
-        const collision = entity.getComponent<import("../engine/core/component.ts").CollisionComponent>("collision")!;
-        return collision.layers.includes("enemy");
-      });
+      const invaders = entityManager.getEntitiesWithComponents("collision")
+        .filter((entity) => {
+          const collision = entity.getComponent<
+            import("../engine/core/component.ts").CollisionComponent
+          >("collision")!;
+          return collision.layers.includes("enemy");
+        });
 
       // Random chance for an invader to shoot
       if (Math.random() < 0.3 && invaders.length > 0) {
@@ -131,25 +151,43 @@ export class SpaceInvadersSystem extends BaseSystem {
   /**
    * Creates a bullet fired by an invader
    */
-  private createInvaderBullet(invader: import("../engine/core/entity.ts").Entity, entityManager: EntityManager): void {
-    const position = invader.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
+  private createInvaderBullet(
+    invader: import("../engine/core/entity.ts").Entity,
+    entityManager: EntityManager,
+  ): void {
+    const position = invader.getComponent<
+      import("../engine/core/component.ts").PositionComponent
+    >("position")!;
 
     const bullet = entityManager.createEntityWithComponents(
-      ComponentFactory.createPosition(position.position.x, position.position.y + 20),
-      ComponentFactory.createVelocity(0, GAME_CONFIG.BULLET_SPEED * 0.6, GAME_CONFIG.BULLET_SPEED),
-      ComponentFactory.createSprite("__white", GAME_CONFIG.BULLET_SIZE.width, GAME_CONFIG.BULLET_SIZE.height),
+      ComponentFactory.createPosition(
+        position.position.x,
+        position.position.y + 20,
+      ),
+      ComponentFactory.createVelocity(
+        0,
+        GAME_CONFIG.BULLET_SPEED * 0.6,
+        GAME_CONFIG.BULLET_SPEED,
+      ),
+      ComponentFactory.createSprite(
+        "__white",
+        GAME_CONFIG.BULLET_SIZE.width,
+        GAME_CONFIG.BULLET_SIZE.height,
+      ),
       ComponentFactory.createBullet(10, invader.id, 10),
       ComponentFactory.createLifetime(10),
       ComponentFactory.createCollision(
         GAME_CONFIG.BULLET_SIZE.width,
         GAME_CONFIG.BULLET_SIZE.height,
         ["enemy_bullet"],
-        ["player", "boundary"]
-      )
+        ["player", "boundary"],
+      ),
     );
 
     // Set bullet color to red
-    const sprite = bullet.getComponent<import("../engine/core/component.ts").SpriteComponent>("sprite")!;
+    const sprite = bullet.getComponent<
+      import("../engine/core/component.ts").SpriteComponent
+    >("sprite")!;
     sprite.color = { r: 1, g: 0, b: 0, a: 1 };
   }
 
@@ -157,10 +195,13 @@ export class SpaceInvadersSystem extends BaseSystem {
    * Checks win/lose conditions
    */
   private checkGameConditions(entityManager: EntityManager): void {
-    const invaders = entityManager.getEntitiesWithComponents("collision").filter(entity => {
-      const collision = entity.getComponent<import("../engine/core/component.ts").CollisionComponent>("collision")!;
-      return collision.layers.includes("enemy");
-    });
+    const invaders = entityManager.getEntitiesWithComponents("collision")
+      .filter((entity) => {
+        const collision = entity.getComponent<
+          import("../engine/core/component.ts").CollisionComponent
+        >("collision")!;
+        return collision.layers.includes("enemy");
+      });
 
     // Win condition - no invaders left
     if (invaders.length === 0) {
@@ -170,7 +211,9 @@ export class SpaceInvadersSystem extends BaseSystem {
 
     // Check if invaders reached bottom
     for (const invader of invaders) {
-      const position = invader.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
+      const position = invader.getComponent<
+        import("../engine/core/component.ts").PositionComponent
+      >("position")!;
       if (position.position.y >= GAME_CONFIG.SCREEN_HEIGHT - 100) {
         this.gameEngine.setGameState(GameState.GameOver);
         return;
@@ -182,13 +225,19 @@ export class SpaceInvadersSystem extends BaseSystem {
    * Constrains player to screen bounds
    */
   private constrainPlayerToScreen(entityManager: EntityManager): void {
-    const players = entityManager.getEntitiesWithComponents("collision").filter(entity => {
-      const collision = entity.getComponent<import("../engine/core/component.ts").CollisionComponent>("collision")!;
-      return collision.layers.includes("player");
-    });
+    const players = entityManager.getEntitiesWithComponents("collision").filter(
+      (entity) => {
+        const collision = entity.getComponent<
+          import("../engine/core/component.ts").CollisionComponent
+        >("collision")!;
+        return collision.layers.includes("player");
+      },
+    );
 
     for (const player of players) {
-      const position = player.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
+      const position = player.getComponent<
+        import("../engine/core/component.ts").PositionComponent
+      >("position")!;
       const halfWidth = 20; // Half player width
 
       if (position.position.x < halfWidth) {

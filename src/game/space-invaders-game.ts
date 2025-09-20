@@ -76,7 +76,10 @@ export class SpaceInvadersGame {
 
   constructor(canvas: HTMLCanvasElement) {
     // Initialize core engine
-    this.gameEngine = new GameEngine(canvas, { debug: true, pauseOnBlur: false });
+    this.gameEngine = new GameEngine(canvas, {
+      debug: true,
+      pauseOnBlur: false,
+    });
 
     // Initialize subsystems
     const inputManager = new InputManager(canvas);
@@ -180,7 +183,9 @@ export class SpaceInvadersGame {
     graphics.setCameraZoom(1.0);
 
     console.log("Camera set to position: (0, 0) to show full screen");
-    console.log(`Screen dimensions: ${GAME_CONFIG.SCREEN_WIDTH} x ${GAME_CONFIG.SCREEN_HEIGHT}`);
+    console.log(
+      `Screen dimensions: ${GAME_CONFIG.SCREEN_WIDTH} x ${GAME_CONFIG.SCREEN_HEIGHT}`,
+    );
   }
 
   /**
@@ -228,7 +233,10 @@ export class SpaceInvadersGame {
     console.log("Player created");
 
     this.createInvaderFormation();
-    console.log("Invader formation created, count:", this.invaderFormation.length);
+    console.log(
+      "Invader formation created, count:",
+      this.invaderFormation.length,
+    );
 
     this.createBoundaries();
     console.log("Boundaries created");
@@ -289,8 +297,12 @@ export class SpaceInvadersGame {
     this.playerId = player.id;
 
     // Debug: Log player position
-    const position = player.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
-    console.log(`Player created at position: (${position.position.x}, ${position.position.y})`);
+    const position = player.getComponent<
+      import("../engine/core/component.ts").PositionComponent
+    >("position")!;
+    console.log(
+      `Player created at position: (${position.position.x}, ${position.position.y})`,
+    );
   }
 
   /**
@@ -342,8 +354,12 @@ export class SpaceInvadersGame {
 
         // Debug: Log first few invader positions
         if (this.invaderFormation.length <= 3) {
-          const invaderPos = invader.getComponent<import("../engine/core/component.ts").PositionComponent>("position")!;
-          console.log(`Invader ${this.invaderFormation.length} created at position: (${invaderPos.position.x}, ${invaderPos.position.y})`);
+          const invaderPos = invader.getComponent<
+            import("../engine/core/component.ts").PositionComponent
+          >("position")!;
+          console.log(
+            `Invader ${this.invaderFormation.length} created at position: (${invaderPos.position.x}, ${invaderPos.position.y})`,
+          );
         }
       }
     }

@@ -2,45 +2,49 @@
  * Full game test with Playwright - attempt 2
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testFullGame() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 2: Full game test...');
+    console.log("🚀 Attempt 2: Full game test...");
 
     browser = await chromium.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
     });
 
     const page = await browser.newPage();
 
     // Navigate to game
-    console.log('Loading game page...');
-    await page.goto('http://localhost:8001', { waitUntil: 'networkidle' });
+    console.log("Loading game page...");
+    await page.goto("http://localhost:8001", { waitUntil: "networkidle" });
 
     // Wait for canvas
-    await page.waitForSelector('canvas.game-canvas');
+    await page.waitForSelector("canvas.game-canvas");
 
     // Wait for game initialization
-    console.log('Waiting for game initialization...');
+    console.log("Waiting for game initialization...");
     await page.waitForTimeout(3000);
 
     // Click Start Game
-    console.log('Starting game...');
+    console.log("Starting game...");
     await page.click('button:has-text("Start Game")');
     await page.waitForTimeout(2000);
 
     // Analyze canvas
-    console.log('Analyzing canvas...');
+    console.log("Analyzing canvas...");
     const analysis = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       if (!canvas || !gl) {
-        return { error: 'Canvas or WebGL not found' };
+        return { error: "Canvas or WebGL not found" };
       }
 
       const width = canvas.width;
@@ -72,58 +76,59 @@ async function testFullGame() {
         coloredPixels,
         greenPixels,
         gameWorking: coloredPixels > 10,
-        playerVisible: greenPixels > 5
+        playerVisible: greenPixels > 5,
       };
     });
 
-    console.log('📊 Canvas Analysis:', analysis);
+    console.log("📊 Canvas Analysis:", analysis);
 
     if (analysis.gameWorking) {
-      console.log('✅ GAME IS WORKING! Sprites detected on canvas');
+      console.log("✅ GAME IS WORKING! Sprites detected on canvas");
 
       if (analysis.playerVisible) {
-        console.log('✅ Player (green sprite) is visible');
+        console.log("✅ Player (green sprite) is visible");
       }
 
       // Test interactions
-      console.log('Testing game controls...');
+      console.log("Testing game controls...");
 
       // Test movement
-      await page.keyboard.press('ArrowLeft');
+      await page.keyboard.press("ArrowLeft");
       await page.waitForTimeout(300);
-      await page.keyboard.press('ArrowRight');
+      await page.keyboard.press("ArrowRight");
       await page.waitForTimeout(300);
 
       // Test shooting
-      await page.keyboard.press('Space');
+      await page.keyboard.press("Space");
       await page.waitForTimeout(500);
 
       // Take final screenshot
-      await page.screenshot({ path: 'screenshots/game-working.png' });
-      console.log('📸 Final screenshot saved');
+      await page.screenshot({ path: "screenshots/game-working.png" });
+      console.log("📸 Final screenshot saved");
 
-      console.log('🎉 FULL GAME TEST SUCCESSFUL!');
+      console.log("🎉 FULL GAME TEST SUCCESSFUL!");
     } else {
-      console.log('❌ No sprites detected on canvas');
-      await page.screenshot({ path: 'screenshots/no-sprites.png' });
+      console.log("❌ No sprites detected on canvas");
+      await page.screenshot({ path: "screenshots/no-sprites.png" });
     }
 
     await browser.close();
     return analysis.gameWorking;
-
   } catch (error) {
-    console.log('❌ Full game test failed:', error.message);
+    console.log("❌ Full game test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
     return false;
   }
 }
 
-testFullGame().then(success => {
+testFullGame().then((success) => {
   if (success) {
-    console.log('🎮 Game is confirmed working with Playwright!');
+    console.log("🎮 Game is confirmed working with Playwright!");
   } else {
-    console.log('Need to try another approach...');
+    console.log("Need to try another approach...");
   }
 });

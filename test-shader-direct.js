@@ -2,24 +2,24 @@
  * Test our game shaders directly - attempt 15
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testShaderDirect() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 15: Testing game shaders directly...');
+    console.log("🚀 Attempt 15: Testing game shaders directly...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8001');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8001");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(3000);
 
     const shaderDirectTest = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       // Use the exact same shaders as our game engine
       const vertexShaderSource = `#version 300 es
@@ -90,10 +90,10 @@ async function testShaderDirect() {
       const fsOk = gl.getShaderParameter(fs, gl.COMPILE_STATUS);
 
       if (!vsOk) {
-        return { error: 'VS compile error: ' + gl.getShaderInfoLog(vs) };
+        return { error: "VS compile error: " + gl.getShaderInfoLog(vs) };
       }
       if (!fsOk) {
-        return { error: 'FS compile error: ' + gl.getShaderInfoLog(fs) };
+        return { error: "FS compile error: " + gl.getShaderInfoLog(fs) };
       }
 
       // Create program
@@ -104,7 +104,7 @@ async function testShaderDirect() {
 
       const linked = gl.getProgramParameter(program, gl.LINK_STATUS);
       if (!linked) {
-        return { error: 'Link error: ' + gl.getProgramInfoLog(program) };
+        return { error: "Link error: " + gl.getProgramInfoLog(program) };
       }
 
       gl.useProgram(program);
@@ -113,30 +113,69 @@ async function testShaderDirect() {
       const texture = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, texture);
       const whitePixel = new Uint8Array([255, 255, 255, 255]);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, whitePixel);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        whitePixel,
+      );
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
       // Set up uniforms
-      const projLoc = gl.getUniformLocation(program, 'u_projection');
-      const modelLoc = gl.getUniformLocation(program, 'u_model');
-      const texLoc = gl.getUniformLocation(program, 'u_texture');
-      const alphaLoc = gl.getUniformLocation(program, 'u_alpha');
+      const projLoc = gl.getUniformLocation(program, "u_projection");
+      const modelLoc = gl.getUniformLocation(program, "u_model");
+      const texLoc = gl.getUniformLocation(program, "u_texture");
+      const alphaLoc = gl.getUniformLocation(program, "u_alpha");
 
       // Set projection matrix (screen coords to clip space)
       if (projLoc) {
         const projection = new Float32Array([
-          2/800,  0,     0,  0,
-          0,     -2/600, 0,  0,
-          0,      0,     1,  0,
-          -1,     1,     0,  1
+          2 / 800,
+          0,
+          0,
+          0,
+          0,
+          -2 / 600,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          1,
+          0,
+          1,
         ]);
         gl.uniformMatrix4fv(projLoc, false, projection);
       }
 
       // Set identity model matrix
       if (modelLoc) {
-        const identity = new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+        const identity = new Float32Array([
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+        ]);
         gl.uniformMatrix4fv(modelLoc, false, identity);
       }
 
@@ -147,10 +186,38 @@ async function testShaderDirect() {
       // Create vertex data for a large green rectangle
       const vertices = new Float32Array([
         // pos_x, pos_y, tex_u, tex_v, color_r, color_g, color_b, color_a
-        300, 200,   0, 0,   0, 1, 0, 1,  // Top-left (green)
-        500, 200,   1, 0,   0, 1, 0, 1,  // Top-right (green)
-        300, 400,   0, 1,   0, 1, 0, 1,  // Bottom-left (green)
-        500, 400,   1, 1,   0, 1, 0, 1   // Bottom-right (green)
+        300,
+        200,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1, // Top-left (green)
+        500,
+        200,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1, // Top-right (green)
+        300,
+        400,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1, // Bottom-left (green)
+        500,
+        400,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1, // Bottom-right (green)
       ]);
 
       // Set up VAO
@@ -162,9 +229,9 @@ async function testShaderDirect() {
       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
       // Set up attributes
-      const posLoc = gl.getAttribLocation(program, 'a_position');
-      const uvLoc = gl.getAttribLocation(program, 'a_texCoord');
-      const colorLoc = gl.getAttribLocation(program, 'a_color');
+      const posLoc = gl.getAttribLocation(program, "a_position");
+      const uvLoc = gl.getAttribLocation(program, "a_texCoord");
+      const colorLoc = gl.getAttribLocation(program, "a_color");
 
       if (posLoc >= 0) {
         gl.enableVertexAttribArray(posLoc);
@@ -214,33 +281,34 @@ async function testShaderDirect() {
       }
 
       return {
-        currentTextureWasBound: currentTexture ? 'yes' : 'no',
+        currentTextureWasBound: currentTexture ? "yes" : "no",
         attributes: { posLoc, uvLoc, colorLoc },
         drawError,
         greenPixelsWithGameShader: greenPixels,
         anyColoredPixelsWithGameShader: anyColoredPixels,
-        gameShaderWorked: anyColoredPixels > 100
+        gameShaderWorked: anyColoredPixels > 100,
       };
     });
 
-    console.log('🎨 Direct Shader Test Results:');
+    console.log("🎨 Direct Shader Test Results:");
     console.log(JSON.stringify(textureTest, null, 2));
 
     if (textureTest.gameShaderWorked) {
-      console.log('🎉 SUCCESS! Game shaders work when used directly!');
+      console.log("🎉 SUCCESS! Game shaders work when used directly!");
     } else {
-      console.log('❌ Even direct shader test failed');
+      console.log("❌ Even direct shader test failed");
     }
 
-    await page.screenshot({ path: 'screenshots/shader-direct-test.png' });
+    await page.screenshot({ path: "screenshots/shader-direct-test.png" });
     await browser.close();
 
     return textureTest.gameShaderWorked;
-
   } catch (error) {
-    console.log('❌ Direct shader test failed:', error.message);
+    console.log("❌ Direct shader test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
     return false;
   }

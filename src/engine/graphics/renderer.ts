@@ -268,7 +268,9 @@ export class Renderer {
 
     // Debug: Log first sprite being rendered (throttled)
     if (this.vertexData === 0 && Math.random() < 0.01) {
-      console.log(`Drawing sprite at (${config.position.x}, ${config.position.y}) size (${config.size.x}, ${config.size.y})`);
+      console.log(
+        `Drawing sprite at (${config.position.x}, ${config.position.y}) size (${config.size.x}, ${config.size.y})`,
+      );
     }
 
     // Check if we need to flush the batch
@@ -400,7 +402,15 @@ export class Renderer {
 
       // Debug: Log first vertex data
       if (this.vertexData === 0 && i === 0) {
-        console.log(`First vertex: pos=(${this.vertices[baseIndex]}, ${this.vertices[baseIndex + 1]}), uv=(${this.vertices[baseIndex + 2]}, ${this.vertices[baseIndex + 3]}), color=(${this.vertices[baseIndex + 4]}, ${this.vertices[baseIndex + 5]}, ${this.vertices[baseIndex + 6]}, ${this.vertices[baseIndex + 7]})`);
+        console.log(
+          `First vertex: pos=(${this.vertices[baseIndex]}, ${
+            this.vertices[baseIndex + 1]
+          }), uv=(${this.vertices[baseIndex + 2]}, ${
+            this.vertices[baseIndex + 3]
+          }), color=(${this.vertices[baseIndex + 4]}, ${
+            this.vertices[baseIndex + 5]
+          }, ${this.vertices[baseIndex + 6]}, ${this.vertices[baseIndex + 7]})`,
+        );
       }
     }
 

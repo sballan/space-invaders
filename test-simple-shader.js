@@ -2,19 +2,19 @@
  * Test with simplified shader - attempt 17
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testSimpleShader() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 17: Testing with simplified coordinate shader...');
+    console.log("🚀 Attempt 17: Testing with simplified coordinate shader...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8001');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8001");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(3000);
 
     // Inject a fix directly into the page
@@ -63,7 +63,7 @@ async function testSimpleShader() {
         }
       `;
 
-      console.log('Simple shaders injected');
+      console.log("Simple shaders injected");
     });
 
     await page.click('button:has-text("Start Game")');
@@ -71,8 +71,8 @@ async function testSimpleShader() {
 
     // Now test with the simple shader approach
     const simpleTest = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       // Try to manually draw a test sprite using the simple shader
       const vs = gl.createShader(gl.VERTEX_SHADER);
@@ -94,13 +94,13 @@ async function testSimpleShader() {
 
       if (!linked || !vsCompiled || !fsCompiled) {
         return {
-          error: 'Shader compilation failed',
+          error: "Shader compilation failed",
           vsCompiled,
           fsCompiled,
           linked,
           vsError: gl.getShaderInfoLog(vs),
           fsError: gl.getShaderInfoLog(fs),
-          linkError: gl.getProgramInfoLog(program)
+          linkError: gl.getProgramInfoLog(program),
         };
       }
 
@@ -110,13 +110,23 @@ async function testSimpleShader() {
       const texture = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, texture);
       const white = new Uint8Array([255, 255, 255, 255]);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, white);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        white,
+      );
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
       // Set uniforms
-      const texLoc = gl.getUniformLocation(program, 'u_texture');
-      const alphaLoc = gl.getUniformLocation(program, 'u_alpha');
+      const texLoc = gl.getUniformLocation(program, "u_texture");
+      const alphaLoc = gl.getUniformLocation(program, "u_alpha");
 
       if (texLoc) gl.uniform1i(texLoc, 0);
       if (alphaLoc) gl.uniform1f(alphaLoc, 1.0);
@@ -124,10 +134,38 @@ async function testSimpleShader() {
       // Create vertex data for a large green square at player position
       const vertices = new Float32Array([
         // pos_x, pos_y, tex_u, tex_v, r, g, b, a
-        350, 450,   0, 0,   0, 1, 0, 1,  // Top-left (player area)
-        450, 450,   1, 0,   0, 1, 0, 1,  // Top-right
-        350, 550,   0, 1,   0, 1, 0, 1,  // Bottom-left
-        450, 550,   1, 1,   0, 1, 0, 1   // Bottom-right
+        350,
+        450,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1, // Top-left (player area)
+        450,
+        450,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1, // Top-right
+        350,
+        550,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1, // Bottom-left
+        450,
+        550,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1, // Bottom-right
       ]);
 
       const vao = gl.createVertexArray();
@@ -138,9 +176,9 @@ async function testSimpleShader() {
       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
       // Set up attributes
-      const posLoc = gl.getAttribLocation(program, 'a_position');
-      const uvLoc = gl.getAttribLocation(program, 'a_texCoord');
-      const colorLoc = gl.getAttribLocation(program, 'a_color');
+      const posLoc = gl.getAttribLocation(program, "a_position");
+      const uvLoc = gl.getAttribLocation(program, "a_texCoord");
+      const colorLoc = gl.getAttribLocation(program, "a_color");
 
       if (posLoc >= 0) {
         gl.enableVertexAttribArray(posLoc);
@@ -187,35 +225,36 @@ async function testSimpleShader() {
         drawError,
         greenPixelsFound: greenPixels,
         totalColoredPixels: totalColored,
-        simpleShaderWorked: totalColored > 1000
+        simpleShaderWorked: totalColored > 1000,
       };
     });
 
-    console.log('🎮 Simple Shader Test Results:');
+    console.log("🎮 Simple Shader Test Results:");
     console.log(JSON.stringify(testResult, null, 2));
 
     if (testResult.simpleShaderWorked) {
-      console.log('🎉 SUCCESS! Simple shader approach worked!');
+      console.log("🎉 SUCCESS! Simple shader approach worked!");
     }
 
-    await page.screenshot({ path: 'screenshots/simple-shader-test.png' });
+    await page.screenshot({ path: "screenshots/simple-shader-test.png" });
     await browser.close();
 
     return testResult.simpleShaderWorked;
-
   } catch (error) {
-    console.log('❌ Simple shader test failed:', error.message);
+    console.log("❌ Simple shader test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
     return false;
   }
 }
 
-testSimpleShader().then(success => {
+testSimpleShader().then((success) => {
   if (success) {
-    console.log('Found a working approach! Now implementing it...');
+    console.log("Found a working approach! Now implementing it...");
   } else {
-    console.log('Continuing to debug...');
+    console.log("Continuing to debug...");
   }
 });

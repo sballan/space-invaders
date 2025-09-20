@@ -2,23 +2,23 @@
  * Test game engine specifically - attempt 5
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testGameEngine() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 5: Testing game engine rendering...');
+    console.log("🚀 Attempt 5: Testing game engine rendering...");
 
     browser = await chromium.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8001');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8001");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(3000);
 
     // Click start game
@@ -27,11 +27,11 @@ async function testGameEngine() {
 
     // Check the actual shader and rendering
     const renderingTest = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       if (!canvas || !gl) {
-        return { error: 'WebGL not available' };
+        return { error: "WebGL not available" };
       }
 
       // Check if there are any WebGL errors
@@ -63,28 +63,29 @@ async function testGameEngine() {
 
       return {
         glError,
-        currentProgram: currentProgram ? 'bound' : 'none',
-        arrayBuffer: arrayBuffer ? 'bound' : 'none',
-        elementBuffer: elementBuffer ? 'bound' : 'none',
-        vertexArray: vertexArray ? 'bound' : 'none',
+        currentProgram: currentProgram ? "bound" : "none",
+        arrayBuffer: arrayBuffer ? "bound" : "none",
+        elementBuffer: elementBuffer ? "bound" : "none",
+        vertexArray: vertexArray ? "bound" : "none",
         viewport: Array.from(viewport),
         greenPixelsAfterClear: greenPixels,
-        clearTestWorked: greenPixels > 100000
+        clearTestWorked: greenPixels > 100000,
       };
     });
 
-    console.log('🎨 Rendering Test:', renderingTest);
+    console.log("🎨 Rendering Test:", renderingTest);
 
     // Take screenshot after manual clear
-    await page.screenshot({ path: 'screenshots/manual-clear-test.png' });
-    console.log('📸 Manual clear test screenshot saved');
+    await page.screenshot({ path: "screenshots/manual-clear-test.png" });
+    console.log("📸 Manual clear test screenshot saved");
 
     await browser.close();
-
   } catch (error) {
-    console.log('❌ Game engine test failed:', error.message);
+    console.log("❌ Game engine test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
   }
 }

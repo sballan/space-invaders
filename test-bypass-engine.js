@@ -2,27 +2,27 @@
  * Bypass game engine entirely - attempt 21
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testBypassEngine() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 21: Bypassing game engine, testing raw WebGL...');
+    console.log("🚀 Attempt 21: Bypassing game engine, testing raw WebGL...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8000');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8000");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(2000);
 
     // Inject our own WebGL code directly into the canvas
     const result = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
+      const canvas = document.querySelector("canvas.game-canvas");
 
       // Get a fresh WebGL context (this might clear the existing one)
-      const gl = canvas.getContext('webgl2', { preserveDrawingBuffer: false });
+      const gl = canvas.getContext("webgl2", { preserveDrawingBuffer: false });
 
       // Create ultra-simple shaders
       const vertexShaderSource = `#version 300 es
@@ -56,7 +56,7 @@ async function testBypassEngine() {
         gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-          console.error('Shader error:', gl.getShaderInfoLog(shader));
+          console.error("Shader error:", gl.getShaderInfoLog(shader));
           return null;
         }
         return shader;
@@ -66,7 +66,7 @@ async function testBypassEngine() {
       const fs = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
 
       if (!vs || !fs) {
-        return { error: 'Shader compilation failed' };
+        return { error: "Shader compilation failed" };
       }
 
       // Create program
@@ -76,7 +76,9 @@ async function testBypassEngine() {
       gl.linkProgram(program);
 
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        return { error: 'Program link failed: ' + gl.getProgramInfoLog(program) };
+        return {
+          error: "Program link failed: " + gl.getProgramInfoLog(program),
+        };
       }
 
       gl.useProgram(program);
@@ -84,31 +86,94 @@ async function testBypassEngine() {
       // Create vertex data for multiple sprites
       const vertices = new Float32Array([
         // Player (green square at 400, 500)
-        375, 475,  0, 1, 0,  // Top-left
-        425, 475,  0, 1, 0,  // Top-right
-        375, 525,  0, 1, 0,  // Bottom-left
-        425, 525,  0, 1, 0,  // Bottom-right
+        375,
+        475,
+        0,
+        1,
+        0, // Top-left
+        425,
+        475,
+        0,
+        1,
+        0, // Top-right
+        375,
+        525,
+        0,
+        1,
+        0, // Bottom-left
+        425,
+        525,
+        0,
+        1,
+        0, // Bottom-right
 
         // Invader 1 (red square at 75, 100)
-        50, 75,   1, 0, 0,   // Top-left
-        100, 75,  1, 0, 0,   // Top-right
-        50, 125,  1, 0, 0,   // Bottom-left
-        100, 125, 1, 0, 0,   // Bottom-right
+        50,
+        75,
+        1,
+        0,
+        0, // Top-left
+        100,
+        75,
+        1,
+        0,
+        0, // Top-right
+        50,
+        125,
+        1,
+        0,
+        0, // Bottom-left
+        100,
+        125,
+        1,
+        0,
+        0, // Bottom-right
 
         // Invader 2 (blue square at 200, 100)
-        175, 75,  0, 0, 1,   // Top-left
-        225, 75,  0, 0, 1,   // Top-right
-        175, 125, 0, 0, 1,   // Bottom-left
-        225, 125, 0, 0, 1    // Bottom-right
+        175,
+        75,
+        0,
+        0,
+        1, // Top-left
+        225,
+        75,
+        0,
+        0,
+        1, // Top-right
+        175,
+        125,
+        0,
+        0,
+        1, // Bottom-left
+        225,
+        125,
+        0,
+        0,
+        1, // Bottom-right
       ]);
 
       const indices = new Uint16Array([
         // Player
-        0, 1, 2, 1, 3, 2,
+        0,
+        1,
+        2,
+        1,
+        3,
+        2,
         // Invader 1
-        4, 5, 6, 5, 7, 6,
+        4,
+        5,
+        6,
+        5,
+        7,
+        6,
         // Invader 2
-        8, 9, 10, 9, 11, 10
+        8,
+        9,
+        10,
+        9,
+        11,
+        10,
       ]);
 
       // Set up buffers
@@ -124,8 +189,8 @@ async function testBypassEngine() {
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
       // Set up attributes
-      const posLoc = gl.getAttribLocation(program, 'position');
-      const colorLoc = gl.getAttribLocation(program, 'color');
+      const posLoc = gl.getAttribLocation(program, "position");
+      const colorLoc = gl.getAttribLocation(program, "color");
 
       gl.enableVertexAttribArray(posLoc);
       gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 5 * 4, 0);
@@ -151,7 +216,9 @@ async function testBypassEngine() {
       let bluePixels = 0;
 
       for (let i = 0; i < testPixels.length; i += 4) {
-        if (testPixels[i] > 0 || testPixels[i + 1] > 0 || testPixels[i + 2] > 0) {
+        if (
+          testPixels[i] > 0 || testPixels[i + 1] > 0 || testPixels[i + 2] > 0
+        ) {
           totalColored++;
           if (testPixels[i] > 100) redPixels++;
           if (testPixels[i + 1] > 100) greenPixels++;
@@ -166,31 +233,32 @@ async function testBypassEngine() {
         redPixels,
         greenPixels,
         bluePixels,
-        bypassWorked: totalColored > 1000
+        bypassWorked: totalColored > 1000,
       };
     });
 
-    console.log('🎯 BYPASS ENGINE RESULTS:');
+    console.log("🎯 BYPASS ENGINE RESULTS:");
     console.log(JSON.stringify(result, null, 2));
 
     if (result.bypassWorked) {
-      console.log('🎉 SUCCESS! Raw WebGL bypass worked!');
-      console.log('🟢 Green pixels (player):', result.greenPixels);
-      console.log('🔴 Red pixels (invaders):', result.redPixels);
-      console.log('🔵 Blue pixels (invaders):', result.bluePixels);
+      console.log("🎉 SUCCESS! Raw WebGL bypass worked!");
+      console.log("🟢 Green pixels (player):", result.greenPixels);
+      console.log("🔴 Red pixels (invaders):", result.redPixels);
+      console.log("🔵 Blue pixels (invaders):", result.bluePixels);
     } else {
-      console.log('❌ Even bypassing the engine failed');
+      console.log("❌ Even bypassing the engine failed");
     }
 
-    await page.screenshot({ path: 'screenshots/bypass-engine.png' });
+    await page.screenshot({ path: "screenshots/bypass-engine.png" });
     await browser.close();
 
     return result.bypassWorked;
-
   } catch (error) {
-    console.log('❌ Bypass test failed:', error.message);
+    console.log("❌ Bypass test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
     return false;
   }

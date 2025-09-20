@@ -2,32 +2,32 @@
  * Shader debugging test - attempt 8
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testShaders() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 8: Testing shader compilation and uniforms...');
+    console.log("🚀 Attempt 8: Testing shader compilation and uniforms...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8001');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8001");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(3000);
 
     await page.click('button:has-text("Start Game")');
     await page.waitForTimeout(2000);
 
     const shaderTest = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       // Get current program
       const program = gl.getParameter(gl.CURRENT_PROGRAM);
       if (!program) {
-        return { error: 'No shader program bound' };
+        return { error: "No shader program bound" };
       }
 
       // Check shader compilation status
@@ -38,8 +38,8 @@ async function testShaders() {
         const compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
         const type = gl.getShaderParameter(shader, gl.SHADER_TYPE);
         shaderInfo.push({
-          type: type === gl.VERTEX_SHADER ? 'vertex' : 'fragment',
-          compiled
+          type: type === gl.VERTEX_SHADER ? "vertex" : "fragment",
+          compiled,
         });
       }
 
@@ -47,21 +47,23 @@ async function testShaders() {
       const linked = gl.getProgramParameter(program, gl.LINK_STATUS);
 
       // Check uniform locations
-      const uniforms = ['u_projection', 'u_model', 'u_texture', 'u_alpha'];
+      const uniforms = ["u_projection", "u_model", "u_texture", "u_alpha"];
       let uniformInfo = {};
 
       for (const uniformName of uniforms) {
         const location = gl.getUniformLocation(program, uniformName);
-        uniformInfo[uniformName] = location ? 'found' : 'missing';
+        uniformInfo[uniformName] = location ? "found" : "missing";
       }
 
       // Check attribute locations
-      const attributes = ['a_position', 'a_texCoord', 'a_color'];
+      const attributes = ["a_position", "a_texCoord", "a_color"];
       let attributeInfo = {};
 
       for (const attrName of attributes) {
         const location = gl.getAttribLocation(program, attrName);
-        attributeInfo[attrName] = location >= 0 ? `location_${location}` : 'missing';
+        attributeInfo[attrName] = location >= 0
+          ? `location_${location}`
+          : "missing";
       }
 
       // Try to manually set a clear color and draw
@@ -84,22 +86,23 @@ async function testShaders() {
         uniformInfo,
         attributeInfo,
         manualClearWorked: redPixels > 5000,
-        redPixelsFound: redPixels
+        redPixelsFound: redPixels,
       };
     });
 
-    console.log('🎨 Shader Test Results:');
+    console.log("🎨 Shader Test Results:");
     console.log(JSON.stringify(shaderTest, null, 2));
 
-    await page.screenshot({ path: 'screenshots/shader-test.png' });
-    console.log('📸 Shader test screenshot saved');
+    await page.screenshot({ path: "screenshots/shader-test.png" });
+    console.log("📸 Shader test screenshot saved");
 
     await browser.close();
-
   } catch (error) {
-    console.log('❌ Shader test failed:', error.message);
+    console.log("❌ Shader test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
   }
 }

@@ -10,13 +10,24 @@ export default function DebugPage() {
       <Head>
         <title>Canvas Debug</title>
       </Head>
-      <div style={{ padding: "20px", fontFamily: "monospace", background: "#000", color: "#0f0", minHeight: "100vh" }}>
+      <div
+        style={{
+          padding: "20px",
+          fontFamily: "monospace",
+          background: "#000",
+          color: "#0f0",
+          minHeight: "100vh",
+        }}
+      >
         <h1>Canvas Debug Tool</h1>
 
         <div style={{ margin: "20px 0" }}>
           <h2>Instructions:</h2>
           <ol>
-            <li>Open the main game page in another tab: <a href="/" style={{ color: "#0ff" }}>http://localhost:8001</a></li>
+            <li>
+              Open the main game page in another tab:{" "}
+              <a href="/" style={{ color: "#0ff" }}>http://localhost:8001</a>
+            </li>
             <li>Start the game and let it run</li>
             <li>Come back to this tab</li>
             <li>Click the buttons below to analyze the canvas</li>
@@ -32,7 +43,7 @@ export default function DebugPage() {
               background: "transparent",
               border: "2px solid #0f0",
               color: "#0f0",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             Analyze Canvas From Main Tab
@@ -46,25 +57,29 @@ export default function DebugPage() {
               background: "transparent",
               border: "2px solid #ff0",
               color: "#ff0",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             Download Canvas Screenshot
           </button>
         </div>
 
-        <div id="results" style={{
-          background: "rgba(0,255,0,0.1)",
-          padding: "20px",
-          marginTop: "20px",
-          border: "1px solid #0f0",
-          whiteSpace: "pre-line"
-        }}>
+        <div
+          id="results"
+          style={{
+            background: "rgba(0,255,0,0.1)",
+            padding: "20px",
+            marginTop: "20px",
+            border: "1px solid #0f0",
+            whiteSpace: "pre-line",
+          }}
+        >
           Results will appear here...
         </div>
 
-        <script dangerouslySetInnerHTML={{
-          __html: `
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
             function analyzeGameCanvas() {
               // Try to get reference to the game canvas from the main tab
               // We'll use cross-tab communication or direct DOM access
@@ -198,8 +213,9 @@ export default function DebugPage() {
                 }
               }, 2000);
             }
-          `
-        }} />
+          `,
+          }}
+        />
       </div>
     </>
   );

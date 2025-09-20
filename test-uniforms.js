@@ -2,41 +2,41 @@
  * Test uniform values - attempt 10
  */
 
-import { chromium } from 'npm:playwright@1.40.0';
+import { chromium } from "npm:playwright@1.40.0";
 
 async function testUniforms() {
   let browser;
 
   try {
-    console.log('🚀 Attempt 10: Testing uniform values...');
+    console.log("🚀 Attempt 10: Testing uniform values...");
 
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
-    await page.goto('http://localhost:8001');
-    await page.waitForSelector('canvas.game-canvas');
+    await page.goto("http://localhost:8001");
+    await page.waitForSelector("canvas.game-canvas");
     await page.waitForTimeout(3000);
 
     await page.click('button:has-text("Start Game")');
     await page.waitForTimeout(2000);
 
     const vertexTest = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas.game-canvas');
-      const gl = canvas.getContext('webgl2');
+      const canvas = document.querySelector("canvas.game-canvas");
+      const gl = canvas.getContext("webgl2");
 
       const program = gl.getParameter(gl.CURRENT_PROGRAM);
-      if (!program) return { error: 'No program' };
+      if (!program) return { error: "No program" };
 
       // Get uniform values
-      const projectionLoc = gl.getUniformLocation(program, 'u_projection');
-      const modelLoc = gl.getUniformLocation(program, 'u_model');
-      const alphaLoc = gl.getUniformLocation(program, 'u_alpha');
+      const projectionLoc = gl.getUniformLocation(program, "u_projection");
+      const modelLoc = gl.getUniformLocation(program, "u_model");
+      const alphaLoc = gl.getUniformLocation(program, "u_alpha");
 
       // We can't easily read matrix uniforms, but we can check if they exist
       const uniformsExist = {
         projection: projectionLoc !== null,
         model: modelLoc !== null,
-        alpha: alphaLoc !== null
+        alpha: alphaLoc !== null,
       };
 
       // Try a simple test: clear to blue and see if it works
@@ -54,10 +54,38 @@ async function testUniforms() {
       // Now try to manually draw with our shader program
       const vertices = new Float32Array([
         // Position, UV, Color (RGBA)
-        100, 100,  0, 0,  1, 0, 0, 1, // Red vertex
-        200, 100,  1, 0,  1, 0, 0, 1,
-        100, 200,  0, 1,  1, 0, 0, 1,
-        200, 200,  1, 1,  1, 0, 0, 1
+        100,
+        100,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1, // Red vertex
+        200,
+        100,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        100,
+        200,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        200,
+        200,
+        1,
+        1,
+        1,
+        0,
+        0,
+        1,
       ]);
 
       const vao = gl.createVertexArray();
@@ -68,9 +96,9 @@ async function testUniforms() {
       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
       // Set up attributes
-      const posLoc = gl.getAttribLocation(program, 'a_position');
-      const uvLoc = gl.getAttribLocation(program, 'a_texCoord');
-      const colorLoc = gl.getAttribLocation(program, 'a_color');
+      const posLoc = gl.getAttribLocation(program, "a_position");
+      const uvLoc = gl.getAttribLocation(program, "a_texCoord");
+      const colorLoc = gl.getAttribLocation(program, "a_color");
 
       if (posLoc >= 0) {
         gl.enableVertexAttribArray(posLoc);
@@ -90,10 +118,22 @@ async function testUniforms() {
       // Set projection matrix to identity (no transformation)
       if (projectionLoc) {
         const identity = new Float32Array([
-          2/800, 0, 0, 0,
-          0, -2/600, 0, 0,
-          0, 0, 1, 0,
-          -1, 1, 0, 1
+          2 / 800,
+          0,
+          0,
+          0,
+          0,
+          -2 / 600,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          -1,
+          1,
+          0,
+          1,
         ]);
         gl.uniformMatrix4fv(projectionLoc, false, identity);
       }
@@ -101,10 +141,22 @@ async function testUniforms() {
       // Set model matrix to identity
       if (modelLoc) {
         const identity = new Float32Array([
-          1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, 0,
-          0, 0, 0, 1
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
         ]);
         gl.uniformMatrix4fv(modelLoc, false, identity);
       }
@@ -135,28 +187,29 @@ async function testUniforms() {
         blueClearWorked: bluePixels > 5000,
         drawError,
         redPixelsAfterManualDraw: redPixelsAfterDraw,
-        manualDrawWorked: redPixelsAfterDraw > 100
+        manualDrawWorked: redPixelsAfterDraw > 100,
       };
     });
 
-    console.log('🎯 Vertex Data Test Results:');
+    console.log("🎯 Vertex Data Test Results:");
     console.log(JSON.stringify(vertexTest, null, 2));
 
     if (vertexTest.manualDrawWorked) {
-      console.log('🎉 SUCCESS! Manual draw with game shaders worked!');
+      console.log("🎉 SUCCESS! Manual draw with game shaders worked!");
     } else {
-      console.log('❌ Manual draw failed - deeper issue in shaders');
+      console.log("❌ Manual draw failed - deeper issue in shaders");
     }
 
-    await page.screenshot({ path: 'screenshots/vertex-data-test.png' });
-    console.log('📸 Vertex data test screenshot saved');
+    await page.screenshot({ path: "screenshots/vertex-data-test.png" });
+    console.log("📸 Vertex data test screenshot saved");
 
     await browser.close();
-
   } catch (error) {
-    console.log('❌ Vertex data test failed:', error.message);
+    console.log("❌ Vertex data test failed:", error.message);
     if (browser) {
-      try { await browser.close(); } catch (e) {}
+      try {
+        await browser.close();
+      } catch (e) {}
     }
   }
 }

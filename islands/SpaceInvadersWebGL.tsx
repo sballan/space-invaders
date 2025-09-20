@@ -63,7 +63,10 @@ export default function SpaceInvadersWebGL() {
         console.log("Canvas element:", canvas?.tagName);
 
         if (!canvas) {
-          console.error("Canvas not found! canvasRef.current is:", canvasRef.current);
+          console.error(
+            "Canvas not found! canvasRef.current is:",
+            canvasRef.current,
+          );
           throw new Error("Canvas not found");
         }
 
@@ -160,7 +163,7 @@ export default function SpaceInvadersWebGL() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl2');
+    const gl = canvas.getContext("webgl2");
     if (!gl) return;
 
     const width = canvas.width;
@@ -185,8 +188,15 @@ export default function SpaceInvadersWebGL() {
       }
     }
 
-    console.log(`Canvas analysis: ${nonBlackPixels} non-black pixels out of ${width * height}`);
-    console.log('Top colors found:', Array.from(colorCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5));
+    console.log(
+      `Canvas analysis: ${nonBlackPixels} non-black pixels out of ${
+        width * height
+      }`,
+    );
+    console.log(
+      "Top colors found:",
+      Array.from(colorCounts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5),
+    );
   };
 
   /**
@@ -272,7 +282,11 @@ export default function SpaceInvadersWebGL() {
                   <h2>Space Invaders</h2>
                   <p>Use Arrow Keys or WASD to move</p>
                   <p>Press Space or click to shoot</p>
-                  <button type="button" onClick={handleStartGame} class="game-button">
+                  <button
+                    type="button"
+                    onClick={handleStartGame}
+                    class="game-button"
+                  >
                     Start Game
                   </button>
                 </>
@@ -281,7 +295,11 @@ export default function SpaceInvadersWebGL() {
               {gameStats.gameState === "paused" && (
                 <>
                   <h2>Game Paused</h2>
-                  <button type="button" onClick={handleTogglePause} class="game-button">
+                  <button
+                    type="button"
+                    onClick={handleTogglePause}
+                    class="game-button"
+                  >
                     Resume
                   </button>
                   <button
@@ -299,7 +317,11 @@ export default function SpaceInvadersWebGL() {
                   <h2>Game Over!</h2>
                   <p>Final Score: {gameStats.score.toLocaleString()}</p>
                   <p>Level Reached: {gameStats.level}</p>
-                  <button type="button" onClick={handleRestartGame} class="game-button">
+                  <button
+                    type="button"
+                    onClick={handleRestartGame}
+                    class="game-button"
+                  >
                     Play Again
                   </button>
                 </>
@@ -313,7 +335,11 @@ export default function SpaceInvadersWebGL() {
       <div class="game-controls">
         {isGameStarted && gameStats.gameState === "running" && (
           <>
-            <button type="button" onClick={handleTogglePause} class="control-button">
+            <button
+              type="button"
+              onClick={handleTogglePause}
+              class="control-button"
+            >
               Pause
             </button>
             <button
@@ -335,8 +361,8 @@ export default function SpaceInvadersWebGL() {
               onClick={() => {
                 const canvas = canvasRef.current;
                 if (canvas) {
-                  const link = document.createElement('a');
-                  link.download = 'canvas-screenshot.png';
+                  const link = document.createElement("a");
+                  link.download = "canvas-screenshot.png";
                   link.href = canvas.toDataURL();
                   link.click();
                 }

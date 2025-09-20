@@ -130,8 +130,12 @@ Deno.test("Entity - Basic functionality", async (t) => {
     assertEquals(clone.hasComponent("velocity"), true);
 
     // Verify components are separate instances
-    const originalPos = original.getComponent<import("../../../src/engine/core/component.ts").PositionComponent>("position")!;
-    const clonePos = clone.getComponent<import("../../../src/engine/core/component.ts").PositionComponent>("position")!;
+    const originalPos = original.getComponent<
+      import("../../../src/engine/core/component.ts").PositionComponent
+    >("position")!;
+    const clonePos = clone.getComponent<
+      import("../../../src/engine/core/component.ts").PositionComponent
+    >("position")!;
     assert(originalPos !== clonePos);
     assertEquals(clonePos.position.x, originalPos.position.x);
     assertEquals(clonePos.position.y, originalPos.position.y);

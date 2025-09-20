@@ -191,7 +191,9 @@ export class GraphicsEngine {
 
     // Only log projection bounds once
     if (!this.projectionLogged) {
-      console.log(`Projection bounds: left=${left}, right=${right}, top=${top}, bottom=${bottom}`);
+      console.log(
+        `Projection bounds: left=${left}, right=${right}, top=${top}, bottom=${bottom}`,
+      );
       this.projectionLogged = true;
     }
 

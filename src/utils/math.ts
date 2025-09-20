@@ -138,12 +138,12 @@ export const Mat4 = {
     const depth = far - near;
 
     // Standard orthographic projection matrix
-    result[0] = 2 / width;           // Scale X
-    result[5] = 2 / height;          // Scale Y
-    result[10] = -2 / depth;         // Scale Z
-    result[12] = -(right + left) / width;   // Translate X
-    result[13] = -(top + bottom) / height;  // Translate Y
-    result[14] = -(far + near) / depth;     // Translate Z
+    result[0] = 2 / width; // Scale X
+    result[5] = 2 / height; // Scale Y
+    result[10] = -2 / depth; // Scale Z
+    result[12] = -(right + left) / width; // Translate X
+    result[13] = -(top + bottom) / height; // Translate Y
+    result[14] = -(far + near) / depth; // Translate Z
     result[15] = 1;
 
     return result;

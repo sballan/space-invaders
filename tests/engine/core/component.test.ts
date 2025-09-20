@@ -3,9 +3,7 @@
  * Tests for component factory and component creation
  */
 
-import {
-  assertEquals,
-} from "https://deno.land/std@0.216.0/assert/mod.ts";
+import { assertEquals } from "https://deno.land/std@0.216.0/assert/mod.ts";
 import { ComponentFactory } from "../../../src/engine/core/component.ts";
 
 Deno.test("ComponentFactory - Position component", async (t) => {

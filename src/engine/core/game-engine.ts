@@ -323,7 +323,9 @@ export class GameEngine {
 
     // Debug: Log game loop is running
     if (this.config.debug && this.frameCount % 60 === 0) {
-      console.log(`Game loop running, frame: ${this.frameCount}, state: ${this.gameState}`);
+      console.log(
+        `Game loop running, frame: ${this.frameCount}, state: ${this.gameState}`,
+      );
     }
 
     // Cap delta time to prevent huge jumps
@@ -370,11 +372,20 @@ export class GameEngine {
     // Debug: Check all entities (throttled to every 2 seconds)
     if (this.config.debug && this.frameCount % 120 === 0) {
       const allEntities = this.entityManager.getAllEntities();
-      const positionEntities = this.entityManager.getEntitiesWithComponents("position");
-      const spriteEntities = this.entityManager.getEntitiesWithComponents("sprite");
-      const bothEntities = this.entityManager.getEntitiesWithComponents("position", "sprite");
+      const positionEntities = this.entityManager.getEntitiesWithComponents(
+        "position",
+      );
+      const spriteEntities = this.entityManager.getEntitiesWithComponents(
+        "sprite",
+      );
+      const bothEntities = this.entityManager.getEntitiesWithComponents(
+        "position",
+        "sprite",
+      );
 
-      console.log(`[Frame ${this.frameCount}] Total entities: ${allEntities.length}, Position: ${positionEntities.length}, Sprite: ${spriteEntities.length}, Both: ${bothEntities.length}`);
+      console.log(
+        `[Frame ${this.frameCount}] Total entities: ${allEntities.length}, Position: ${positionEntities.length}, Sprite: ${spriteEntities.length}, Both: ${bothEntities.length}`,
+      );
     }
 
     const entities = this.entityManager.getEntitiesWithComponents(
@@ -398,7 +409,9 @@ export class GameEngine {
 
     // Debug: Log entity count (throttled)
     if (this.config.debug && this.frameCount % 120 === 0) {
-      console.log(`[Frame ${this.frameCount}] Rendering ${entities.length} entities`);
+      console.log(
+        `[Frame ${this.frameCount}] Rendering ${entities.length} entities`,
+      );
     }
 
     // Render all visible sprites
