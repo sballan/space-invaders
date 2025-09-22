@@ -4,7 +4,7 @@
  * Supports texture atlasing, color tinting, and efficient batching
  */
 
-import { Matrix4, Vec2, Vector2 } from "../../utils/math.ts";
+import { Matrix4, Vec2 as _Vec2, Vector2 } from "../../utils/math.ts";
 import {
   DefaultShaders,
   ShaderManager,

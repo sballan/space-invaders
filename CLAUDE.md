@@ -23,7 +23,8 @@ Before asking the user to verify changes in their browser:
 
 1. **Use Playwright for Verification**: When you want to know if a change was
    successful, use Playwright to test the functionality automatically
-2. **Create Test Scripts**: Write Playwright test scripts in `temp/tests/` to verify:
+2. **Create Test Scripts**: Write Playwright test scripts in `temp/tests/` to
+   verify:
    - Visual rendering (screenshots saved to `temp/screenshots/`)
    - Canvas pixel analysis
    - Game functionality

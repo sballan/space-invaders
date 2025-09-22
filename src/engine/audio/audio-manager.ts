@@ -78,8 +78,10 @@ export class AudioManager {
 
   constructor() {
     // Initialize Audio Context
-    this.audioContext =
-      new (window.AudioContext || (window as any).webkitAudioContext)();
+    this.audioContext = new (globalThis.AudioContext ||
+      (globalThis as typeof globalThis & {
+        webkitAudioContext?: typeof AudioContext;
+      }).webkitAudioContext)();
 
     // Create master gain node
     this.masterGainNode = this.audioContext.createGain();
@@ -258,7 +260,7 @@ export class AudioManager {
     if (instance && instance.playing) {
       try {
         instance.source.stop();
-      } catch (error) {
+      } catch (_error) {
         // Source might already be stopped
       }
 
@@ -406,7 +408,10 @@ export class AudioManager {
    * Checks if audio is supported
    */
   isSupported(): boolean {
-    return !!(window.AudioContext || (window as any).webkitAudioContext);
+    return !!(globalThis.AudioContext ||
+      (globalThis as typeof globalThis & {
+        webkitAudioContext?: typeof AudioContext;
+      }).webkitAudioContext);
   }
 
   /**

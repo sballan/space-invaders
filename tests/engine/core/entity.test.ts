@@ -146,12 +146,12 @@ Deno.test("EntityManager - Entity management", async (t) => {
   await t.step("createEntity - creates entity with unique ID", () => {
     const manager = new EntityManager();
 
-    const entity1 = manager.createEntity();
+    const _entity1 = manager.createEntity();
     const entity2 = manager.createEntity();
 
-    assertEquals(entity1.id, 1);
+    assertEquals(_entity1.id, 1);
     assertEquals(entity2.id, 2);
-    assert(entity1.id !== entity2.id);
+    assert(_entity1.id !== entity2.id);
   });
 
   await t.step("getEntity - retrieves entity by ID", () => {
@@ -189,7 +189,7 @@ Deno.test("EntityManager - Entity management", async (t) => {
 
   await t.step("getActiveEntities - returns only active entities", () => {
     const manager = new EntityManager();
-    const entity1 = manager.createEntity();
+    const _entity1 = manager.createEntity();
     const entity2 = manager.createEntity();
     const entity3 = manager.createEntity();
 
@@ -197,27 +197,27 @@ Deno.test("EntityManager - Entity management", async (t) => {
 
     const activeEntities = manager.getActiveEntities();
     assertEquals(activeEntities.length, 2);
-    assertEquals(activeEntities.includes(entity1), true);
+    assertEquals(activeEntities.includes(_entity1), true);
     assertEquals(activeEntities.includes(entity2), false);
     assertEquals(activeEntities.includes(entity3), true);
   });
 
   await t.step("getAllEntities - returns all entities", () => {
     const manager = new EntityManager();
-    const entity1 = manager.createEntity();
+    const _entity1 = manager.createEntity();
     const entity2 = manager.createEntity();
 
     manager.destroyEntity(entity2.id);
 
     const allEntities = manager.getAllEntities();
     assertEquals(allEntities.length, 2);
-    assertEquals(allEntities.includes(entity1), true);
+    assertEquals(allEntities.includes(_entity1), true);
     assertEquals(allEntities.includes(entity2), true);
   });
 
   await t.step("cleanup - removes destroyed entities", () => {
     const manager = new EntityManager();
-    const entity1 = manager.createEntity();
+    const _entity1 = manager.createEntity();
     const entity2 = manager.createEntity();
 
     manager.destroyEntity(entity2.id);
@@ -227,15 +227,15 @@ Deno.test("EntityManager - Entity management", async (t) => {
     manager.cleanup();
 
     assertEquals(manager.getAllEntities().length, 1);
-    assertEquals(manager.getEntity(entity1.id), entity1);
+    assertEquals(manager.getEntity(_entity1.id), _entity1);
     assertEquals(manager.getEntity(entity2.id), undefined);
   });
 
   await t.step("getEntitiesWithComponents - queries by components", () => {
     const manager = new EntityManager();
 
-    const entity1 = manager.createEntity();
-    entity1.addComponent(ComponentFactory.createPosition(0, 0));
+    const _entity1 = manager.createEntity();
+    _entity1.addComponent(ComponentFactory.createPosition(0, 0));
 
     const entity2 = manager.createEntity();
     entity2.addComponent(ComponentFactory.createPosition(10, 10));
@@ -247,7 +247,7 @@ Deno.test("EntityManager - Entity management", async (t) => {
     // Query for position components
     const positionEntities = manager.getEntitiesWithComponents("position");
     assertEquals(positionEntities.length, 2);
-    assertEquals(positionEntities.includes(entity1), true);
+    assertEquals(positionEntities.includes(_entity1), true);
     assertEquals(positionEntities.includes(entity2), true);
 
     // Query for both position and velocity
@@ -283,8 +283,8 @@ Deno.test("EntityManager - Entity management", async (t) => {
   await t.step("getEntitiesInRadius - finds entities within distance", () => {
     const manager = new EntityManager();
 
-    const entity1 = manager.createEntity();
-    entity1.addComponent(ComponentFactory.createPosition(0, 0));
+    const _entity1 = manager.createEntity();
+    _entity1.addComponent(ComponentFactory.createPosition(0, 0));
 
     const entity2 = manager.createEntity();
     entity2.addComponent(ComponentFactory.createPosition(3, 4)); // Distance = 5
@@ -295,21 +295,21 @@ Deno.test("EntityManager - Entity management", async (t) => {
     // Find entities within radius 6 of origin
     const nearbyEntities = manager.getEntitiesInRadius(0, 0, 6);
     assertEquals(nearbyEntities.length, 2);
-    assertEquals(nearbyEntities.includes(entity1), true);
+    assertEquals(nearbyEntities.includes(_entity1), true);
     assertEquals(nearbyEntities.includes(entity2), true);
     assertEquals(nearbyEntities.includes(entity3), false);
 
     // Find entities within radius 3 of origin
     const closeEntities = manager.getEntitiesInRadius(0, 0, 3);
     assertEquals(closeEntities.length, 1);
-    assertEquals(closeEntities.includes(entity1), true);
+    assertEquals(closeEntities.includes(_entity1), true);
   });
 
   await t.step("getClosestEntity - finds nearest entity", () => {
     const manager = new EntityManager();
 
-    const entity1 = manager.createEntity();
-    entity1.addComponent(ComponentFactory.createPosition(5, 0));
+    const _entity1 = manager.createEntity();
+    _entity1.addComponent(ComponentFactory.createPosition(5, 0));
 
     const entity2 = manager.createEntity();
     entity2.addComponent(ComponentFactory.createPosition(3, 4)); // Distance = 5
@@ -318,7 +318,7 @@ Deno.test("EntityManager - Entity management", async (t) => {
     entity3.addComponent(ComponentFactory.createPosition(10, 10));
 
     const closest = manager.getClosestEntity(0, 0);
-    assertEquals(closest, entity1); // Distance 5 is closest (entity1 at (5,0))
+    assertEquals(closest, _entity1); // Distance 5 is closest (_entity1 at (5,0))
 
     const closestFromFar = manager.getClosestEntity(100, 100);
     assertEquals(closestFromFar, entity3); // Closest to (100,100)
@@ -326,7 +326,7 @@ Deno.test("EntityManager - Entity management", async (t) => {
 
   await t.step("getStats - returns entity statistics", () => {
     const manager = new EntityManager();
-    const entity1 = manager.createEntity();
+    const _entity1 = manager.createEntity();
     const entity2 = manager.createEntity();
 
     manager.destroyEntity(entity2.id);

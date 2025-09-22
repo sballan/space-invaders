@@ -64,7 +64,7 @@ export class CollisionSystem extends BaseSystem {
     super(50); // Medium-high priority - run after movement but before rendering
   }
 
-  public initialize(entityManager: EntityManager): void {
+  public override initialize(_entityManager: EntityManager): void {
     // Set up default collision handlers
     this.setupDefaultHandlers();
   }
@@ -118,13 +118,13 @@ export class CollisionSystem extends BaseSystem {
     });
 
     // Boundary collision (keep entities in bounds)
-    this.registerCollisionHandler("boundary", (event) => {
+    this.registerCollisionHandler("boundary", (_event) => {
       // This would handle screen boundary collisions
       // Implementation depends on game-specific boundary logic
     });
   }
 
-  public update(deltaTime: number, entityManager: EntityManager): void {
+  public update(_deltaTime: number, entityManager: EntityManager): void {
     this.collisionChecks = 0;
     this.collisionsDetected = 0;
 
@@ -153,7 +153,7 @@ export class CollisionSystem extends BaseSystem {
    */
   private populateSpatialGrid(entities: Entity[]): void {
     for (const entity of entities) {
-      const position = entity.getComponent<PositionComponent>("position")!;
+      const _position = entity.getComponent<PositionComponent>("position")!;
       const collision = entity.getComponent<CollisionComponent>("collision")!;
 
       if (!collision.enabled) continue;
@@ -193,7 +193,7 @@ export class CollisionSystem extends BaseSystem {
   /**
    * Detects collisions between entities in each spatial cell
    */
-  private detectCollisions(entityManager: EntityManager): void {
+  private detectCollisions(_entityManager: EntityManager): void {
     const checkedPairs = new Set<string>();
 
     for (const cell of this.spatialGrid.values()) {
@@ -531,7 +531,7 @@ export class CollisionSystem extends BaseSystem {
     this.cellSize = Math.max(32, size); // Minimum cell size of 32 units
   }
 
-  public cleanup(): void {
+  public override cleanup(): void {
     this.spatialGrid.clear();
     this.collisionHandlers.clear();
   }

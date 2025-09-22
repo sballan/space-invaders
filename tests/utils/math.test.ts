@@ -10,7 +10,7 @@ import {
 import {
   Mat4,
   MathUtils,
-  Matrix4,
+  Matrix4 as _Matrix4,
   Vec2,
   Vector2,
 } from "../../src/utils/math.ts";

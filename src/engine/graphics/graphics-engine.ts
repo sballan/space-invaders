@@ -178,8 +178,8 @@ export class GraphicsEngine {
    */
   private updateProjectionMatrix(): void {
     // Calculate world space dimensions based on viewport and zoom
-    const halfWidth = (this.viewportWidth * 0.5) / this.camera.zoom;
-    const halfHeight = (this.viewportHeight * 0.5) / this.camera.zoom;
+    const _halfWidth = (this.viewportWidth * 0.5) / this.camera.zoom;
+    const _halfHeight = (this.viewportHeight * 0.5) / this.camera.zoom;
 
     // Create orthographic projection matrix that transforms screen coordinates to clip space
     // Screen coordinates: (0,0) top-left to (width,height) bottom-right

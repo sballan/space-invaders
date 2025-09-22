@@ -223,16 +223,16 @@ export default function SpaceInvaders() {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keyup", handleKeyUp);
 
     if (gameState === "playing") {
       updateGame();
     }
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      globalThis.removeEventListener("keydown", handleKeyDown);
+      globalThis.removeEventListener("keyup", handleKeyUp);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -262,7 +262,7 @@ export default function SpaceInvaders() {
           <div class="game-message">
             <h2>{gameState === "gameover" ? "Game Over!" : "You Win!"}</h2>
             <p>Final Score: {score}</p>
-            <button onClick={resetGame}>Play Again</button>
+            <button type="button" onClick={resetGame}>Play Again</button>
           </div>
         </div>
       )}

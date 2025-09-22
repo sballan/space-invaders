@@ -145,10 +145,10 @@ export class GameEngine {
    * Sets up window event listeners
    */
   private setupEventListeners(): void {
-    window.addEventListener("resize", this.boundWindowResize);
+    globalThis.addEventListener("resize", this.boundWindowResize);
     if (this.config.pauseOnBlur) {
-      window.addEventListener("blur", this.boundWindowBlur);
-      window.addEventListener("focus", this.boundWindowFocus);
+      globalThis.addEventListener("blur", this.boundWindowBlur);
+      globalThis.addEventListener("focus", this.boundWindowFocus);
     }
   }
 
@@ -528,9 +528,9 @@ export class GameEngine {
     this.stop();
 
     // Remove event listeners
-    window.removeEventListener("resize", this.boundWindowResize);
-    window.removeEventListener("blur", this.boundWindowBlur);
-    window.removeEventListener("focus", this.boundWindowFocus);
+    globalThis.removeEventListener("resize", this.boundWindowResize);
+    globalThis.removeEventListener("blur", this.boundWindowBlur);
+    globalThis.removeEventListener("focus", this.boundWindowFocus);
 
     // Clean up subsystems
     this.systemManager.cleanup();

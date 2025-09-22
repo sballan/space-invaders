@@ -143,7 +143,7 @@ export class SpaceInvadersGame {
       const bullet = event.entityA.hasComponent("bullet")
         ? event.entityA
         : event.entityB;
-      const player = bullet === event.entityA ? event.entityB : event.entityA;
+      const _player = bullet === event.entityA ? event.entityB : event.entityA;
 
       // Destroy bullet
       bullet.destroy();
@@ -153,7 +153,7 @@ export class SpaceInvadersGame {
     });
 
     // Invader hits player (collision)
-    this.collisionSystem.registerCollisionHandler("player_enemy", (event) => {
+    this.collisionSystem.registerCollisionHandler("player_enemy", (_event) => {
       this.damagePlayer();
     });
 
@@ -191,7 +191,7 @@ export class SpaceInvadersGame {
   /**
    * Loads game assets
    */
-  async loadAssets(): Promise<void> {
+  loadAssets(): void {
     try {
       // Skip audio initialization for now to avoid hanging
       console.log("Skipping audio initialization for now...");

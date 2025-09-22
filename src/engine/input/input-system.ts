@@ -26,7 +26,7 @@ export class InputSystem extends BaseSystem {
     this.inputManager = inputManager;
   }
 
-  public initialize(entityManager: EntityManager): void {
+  public override initialize(_entityManager: EntityManager): void {
     // Register common game actions
     this.setupCommonActions();
   }
@@ -147,7 +147,7 @@ export class InputSystem extends BaseSystem {
   private processMovementInput(
     entity: import("../core/entity.ts").Entity,
     inputComponent: InputComponent,
-    deltaTime: number,
+    _deltaTime: number,
   ): void {
     const velocity = entity.getComponent<VelocityComponent>("velocity")!;
 
@@ -319,7 +319,7 @@ export class InputSystem extends BaseSystem {
     this.inputManager.setEnabled(enabled);
   }
 
-  public cleanup(): void {
+  public override cleanup(): void {
     this.inputManager.destroy();
   }
 }

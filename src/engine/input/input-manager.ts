@@ -144,8 +144,8 @@ export class InputManager {
    */
   private setupEventListeners(): void {
     // Keyboard events (global)
-    window.addEventListener("keydown", this.boundKeyDown);
-    window.addEventListener("keyup", this.boundKeyUp);
+    globalThis.addEventListener("keydown", this.boundKeyDown);
+    globalThis.addEventListener("keyup", this.boundKeyUp);
 
     // Mouse events (canvas-specific)
     this.canvas.addEventListener("mousedown", this.boundMouseDown);
@@ -176,8 +176,8 @@ export class InputManager {
    * Removes all event listeners
    */
   private removeEventListeners(): void {
-    window.removeEventListener("keydown", this.boundKeyDown);
-    window.removeEventListener("keyup", this.boundKeyUp);
+    globalThis.removeEventListener("keydown", this.boundKeyDown);
+    globalThis.removeEventListener("keyup", this.boundKeyUp);
 
     this.canvas.removeEventListener("mousedown", this.boundMouseDown);
     this.canvas.removeEventListener("mouseup", this.boundMouseUp);
