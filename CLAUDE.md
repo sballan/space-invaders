@@ -4,8 +4,9 @@
 
 ### Required Actions After Every Code Change
 
-1. **Run Tests**: Always execute `deno test` after making any code changes to
-   ensure nothing is broken
+1. **Run Full Test Suite**: Always execute the complete test suite after making
+   any code changes:
+   - `deno task test:all`
 2. **Run Linter**: Always execute `deno task check` to maintain code quality and
    type safety
 
@@ -13,9 +14,12 @@ Example workflow:
 
 ```bash
 # After making changes
-deno test
 deno task check
+deno task test:all
 ```
+
+**IMPORTANT**: All tests (unit and e2e) must pass before considering any code
+change complete.
 
 ### Verification Process
 
@@ -32,7 +36,7 @@ Before asking the user to verify changes in their browser:
 
 Example Playwright verification:
 
-```javascript
+```typescript
 // Create test script in temp/tests/verify-feature.js
 import { chromium } from "npm:playwright@1.40.0";
 
@@ -75,15 +79,18 @@ This project contains:
 
 ### Testing Strategy
 
-- **Unit Tests**: `deno test tests/` - Test individual modules
-- **Integration Tests**: Playwright scripts - Test full game functionality
+- **Unit Tests**: `deno test tests/` - Test individual modules and engine
+  components
+- **Integration Tests**: `deno test temp/tests/` - Playwright-based browser
+  testing
+- **End-to-End Tests**: `deno test e2e/` - Complete user workflow testing
 - **Visual Tests**: Screenshot comparison via Playwright
 - **Performance Tests**: Canvas pixel analysis for rendering verification
 
 ### Quality Standards
 
 - All code must pass `deno task check` (formatting, linting, type checking)
-- All tests must pass before considering changes complete
+- **ALL tests must pass** before considering changes complete
 - Use Playwright to verify visual/interactive changes work correctly
 - Document any new features or significant changes
 - Maintain the modular architecture for extensibility
