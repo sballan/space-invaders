@@ -248,7 +248,7 @@ export class SpaceInvadersGame {
     const allEntities = entityManager.getAllEntities();
     console.log("Total entities created:", allEntities.length);
 
-    console.log("Space Invaders game started!");
+    console.log("=== GAME STARTED: Space Invaders is now running ===");
   }
 
   /**
