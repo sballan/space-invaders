@@ -54,33 +54,77 @@ async function verifyChange() {
 
 ### Playing the Game with Playwright
 
-You can play the game automatically using Playwright to verify gameplay
-functionality:
+#### Automated Gameplay
 
-**Script Location**: `claude-play-game.ts`
-
-**Run Command**:
+**Script**: `claude-play-game.ts`
 
 ```bash
 deno run --allow-all claude-play-game.ts
 ```
 
-This script will:
+This script automatically plays the game for 60 seconds with random actions,
+capturing screenshots every 1 second. Useful for quick smoke testing.
 
-- Launch a headless browser
-- Start the game automatically
-- Simulate player actions (moving left/right, shooting)
-- Capture screenshots every 1 second
-- Play for 60 seconds
-- Save all screenshots to a timestamped session folder:
-  `temp/screenshots/session-<timestamp>/`
+#### Interactive Gameplay (Claude Plays the Game)
 
-Use this to:
+**Script**: `claude-play-game-interactive.ts`
 
-- Verify gameplay changes work correctly
-- Test game balance and difficulty
-- Debug visual or gameplay issues
-- Create gameplay documentation
+**How it works**:
+1. Start the interactive game server (runs in background):
+   ```bash
+   deno run --allow-all claude-play-game-interactive.ts
+   ```
+
+2. The server:
+   - Launches a headless browser with the game
+   - Starts the game and pauses it immediately
+   - Opens a Unix socket at `/tmp/space-invaders.sock`
+   - Waits for commands
+
+3. Send commands via the socket using the helper script:
+   ```bash
+   deno run --allow-all send-game-command.ts <command>
+   ```
+
+4. Available commands:
+   - `move_left` - Move player left for 0.5 seconds
+   - `move_right` - Move player right for 0.5 seconds
+   - `shoot` - Fire weapon
+   - `wait` - Do nothing, let game state evolve
+   - `quit` - Shut down the game server
+
+5. After each command, the server:
+   - Unpauses the game
+   - Executes the action for 0.5 seconds
+   - Pauses the game again
+   - Takes a screenshot
+   - Responds with the screenshot path: `SCREENSHOT: <path>`
+
+**Claude's Gameplay Loop**:
+```bash
+# Start server in background
+deno run --allow-all claude-play-game-interactive.ts &
+
+# Claude analyzes screenshots and sends commands
+deno run --allow-all send-game-command.ts shoot
+# Response: SCREENSHOT: temp/screenshots/session-<timestamp>/turn-000.png
+
+# Claude reads the screenshot, decides next action
+deno run --allow-all send-game-command.ts move_right
+# Response: SCREENSHOT: temp/screenshots/session-<timestamp>/turn-001.png
+
+# Continue playing...
+deno run --allow-all send-game-command.ts shoot
+deno run --allow-all send-game-command.ts wait
+deno run --allow-all send-game-command.ts quit
+```
+
+**Use Cases**:
+- Claude can play the game strategically based on visual feedback
+- Test AI decision-making and game difficulty
+- Debug specific gameplay scenarios interactively
+- Verify game balance through actual strategic gameplay
+- Create gameplay demonstrations and documentation
 
 ### Temporary File Organization
 

@@ -74,12 +74,19 @@ export class SpaceInvadersGame {
   private readonly INVADER_MOVE_INTERVAL = 1.0; // Seconds between moves
   private readonly INVADER_SHOOT_INTERVAL = 2.0; // Seconds between shots
 
+  // Debug pause mode
+  private debugPaused = false;
+  private boundHandleDebugPause = this.handleDebugPause.bind(this);
+
   constructor(canvas: HTMLCanvasElement) {
     // Initialize core engine
     this.gameEngine = new GameEngine(canvas, {
       debug: true,
       pauseOnBlur: false,
     });
+
+    // Set up debug pause keyboard handler
+    this.setupDebugPause();
 
     // Initialize subsystems
     const inputManager = new InputManager(canvas);
@@ -170,6 +177,26 @@ export class SpaceInvadersGame {
         bullet.destroy();
       }
     });
+  }
+
+  /**
+   * Sets up debug pause keyboard handler
+   */
+  private setupDebugPause(): void {
+    globalThis.addEventListener("keydown", this.boundHandleDebugPause);
+  }
+
+  /**
+   * Handles debug pause toggle (capital P key)
+   */
+  private handleDebugPause(event: KeyboardEvent): void {
+    // Check for Shift+P (capital P)
+    if (event.code === "KeyP" && event.shiftKey) {
+      this.debugPaused = !this.debugPaused;
+      console.log(
+        `[DEBUG PAUSE] ${this.debugPaused ? "PAUSED" : "RESUMED"}`,
+      );
+    }
   }
 
   /**
@@ -417,6 +444,11 @@ export class SpaceInvadersGame {
     if (
       !this.gameStarted || this.gameEngine.getGameState() !== GameState.Running
     ) {
+      return;
+    }
+
+    // Skip game updates if debug paused
+    if (this.debugPaused) {
       return;
     }
 
@@ -725,6 +757,7 @@ export class SpaceInvadersGame {
    * Destroys the game and cleans up resources
    */
   destroy(): void {
+    globalThis.removeEventListener("keydown", this.boundHandleDebugPause);
     this.gameEngine.destroy();
     this.audioManager.destroy();
   }
