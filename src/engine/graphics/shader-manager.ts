@@ -346,8 +346,8 @@ export const DefaultShaders = {
   `,
 
   /**
-   * Basic sprite fragment shader
-   * Renders solid colors for debugging (ignores texture)
+   * Alien sprite fragment shader
+   * Procedurally generates alien-like shapes using UV coordinates
    */
   spriteFragment: `#version 300 es
     precision highp float;
@@ -364,9 +364,56 @@ export const DefaultShaders = {
     out vec4 fragColor;
 
     void main() {
-      // Debug: Mix vertex color with bright base color to ensure visibility
-      vec3 debugColor = mix(vec3(1.0, 1.0, 0.0), v_color.rgb, 0.8); // Yellow mixed with vertex color
-      fragColor = vec4(debugColor, 1.0);
+      vec2 uv = v_texCoord;
+
+      // Create alien body shape using distance fields
+      vec2 center = vec2(0.5, 0.5);
+      float dist = distance(uv, center);
+
+      // Main body - oval shape
+      vec2 bodyUV = (uv - center) * vec2(1.2, 1.8);
+      float body = 1.0 - smoothstep(0.35, 0.4, length(bodyUV));
+
+      // Head - larger oval at top
+      vec2 headCenter = vec2(0.5, 0.25);
+      vec2 headUV = (uv - headCenter) * vec2(1.5, 2.0);
+      float head = 1.0 - smoothstep(0.3, 0.35, length(headUV));
+
+      // Eyes - two bright spots
+      vec2 eyeLeft = vec2(0.35, 0.2);
+      vec2 eyeRight = vec2(0.65, 0.2);
+      float leftEye = 1.0 - smoothstep(0.05, 0.08, distance(uv, eyeLeft));
+      float rightEye = 1.0 - smoothstep(0.05, 0.08, distance(uv, eyeRight));
+      float eyes = leftEye + rightEye;
+
+      // Tentacles/legs at bottom
+      float tentacle1 = 1.0 - smoothstep(0.02, 0.04, abs(uv.x - 0.3)) * (1.0 - smoothstep(0.7, 1.0, uv.y));
+      float tentacle2 = 1.0 - smoothstep(0.02, 0.04, abs(uv.x - 0.5)) * (1.0 - smoothstep(0.65, 1.0, uv.y));
+      float tentacle3 = 1.0 - smoothstep(0.02, 0.04, abs(uv.x - 0.7)) * (1.0 - smoothstep(0.7, 1.0, uv.y));
+      float tentacles = tentacle1 + tentacle2 + tentacle3;
+
+      // Combine all parts
+      float alien = max(max(body, head), max(eyes, tentacles));
+
+      // Create base alien color
+      vec3 alienColor = v_color.rgb;
+
+      // Make eyes brighter
+      if (eyes > 0.5) {
+        alienColor = mix(alienColor, vec3(1.0, 1.0, 0.8), 0.8);
+      }
+
+      // Add some texture/details
+      float detail = sin(uv.x * 20.0) * sin(uv.y * 15.0) * 0.1;
+      alienColor += detail * alienColor;
+
+      // Final color with alpha based on alien shape
+      fragColor = vec4(alienColor, alien * u_alpha);
+
+      // Discard transparent pixels
+      if (alien < 0.1) {
+        discard;
+      }
     }
   `,
 };
