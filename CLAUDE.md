@@ -52,6 +52,36 @@ async function verifyChange() {
 }
 ```
 
+### Playing the Game with Playwright
+
+You can play the game automatically using Playwright to verify gameplay
+functionality:
+
+**Script Location**: `claude-play-game.ts`
+
+**Run Command**:
+
+```bash
+deno run --allow-all claude-play-game.ts
+```
+
+This script will:
+
+- Launch a headless browser
+- Start the game automatically
+- Simulate player actions (moving left/right, shooting)
+- Capture screenshots every 2 seconds
+- Play for 60 seconds
+- Save all screenshots to a timestamped session folder:
+  `temp/screenshots/session-<timestamp>/`
+
+Use this to:
+
+- Verify gameplay changes work correctly
+- Test game balance and difficulty
+- Debug visual or gameplay issues
+- Create gameplay documentation
+
 ### Temporary File Organization
 
 - `temp/tests/` - Playwright verification scripts
