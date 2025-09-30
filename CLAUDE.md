@@ -54,22 +54,12 @@ async function verifyChange() {
 
 ### Playing the Game with Playwright
 
-#### Automated Gameplay
-
-**Script**: `claude-play-game.ts`
-
-```bash
-deno run --allow-all claude-play-game.ts
-```
-
-This script automatically plays the game for 60 seconds with random actions,
-capturing screenshots every 1 second. Useful for quick smoke testing.
-
 #### Interactive Gameplay (Claude Plays the Game)
 
 **Script**: `claude-play-game-interactive.ts`
 
 **How it works**:
+
 1. Start the interactive game server (runs in background):
    ```bash
    deno run --allow-all claude-play-game-interactive.ts
@@ -101,6 +91,7 @@ capturing screenshots every 1 second. Useful for quick smoke testing.
    - Responds with the screenshot path: `SCREENSHOT: <path>`
 
 **Claude's Gameplay Loop**:
+
 ```bash
 # Start server in background
 deno run --allow-all claude-play-game-interactive.ts &
@@ -120,6 +111,7 @@ deno run --allow-all send-game-command.ts quit
 ```
 
 **Use Cases**:
+
 - Claude can play the game strategically based on visual feedback
 - Test AI decision-making and game difficulty
 - Debug specific gameplay scenarios interactively

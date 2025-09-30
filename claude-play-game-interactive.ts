@@ -14,7 +14,7 @@ import { ensureDir } from "https://deno.land/std@0.208.0/fs/mod.ts";
  */
 
 const SOCKET_PATH = "/tmp/space-invaders.sock";
-const ACTION_DURATION_MS = 200; // How long to run the game before pausing and taking screenshot
+const ACTION_DURATION_MS = 100; // How long to run the game before pausing and taking screenshot
 
 async function handleConnection(
   conn: Deno.Conn,
@@ -69,7 +69,7 @@ async function handleConnection(
 
     // Pause the game again
     await page.keyboard.press("Shift+KeyP");
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(50);
 
     // Take screenshot
     const screenshotPath = `${sessionDir}/turn-${String(turnCounter.value).padStart(3, "0")}.png`;
@@ -130,12 +130,12 @@ async function playGameInteractive() {
     // Start the game
     console.log("STARTING: Clicking start button...");
     await page.click("text=START GAME");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(100);
 
     // Immediately pause the game with Shift+P
     console.log("PAUSING: Game is paused and ready");
     await page.keyboard.press("Shift+KeyP");
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(50);
 
     // Start Unix socket server
     listener = Deno.listen({ path: SOCKET_PATH, transport: "unix" });
