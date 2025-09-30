@@ -7,13 +7,14 @@ import { ensureDir } from "https://deno.land/std@0.208.0/fs/mod.ts";
  * Protocol:
  * - Listens on /tmp/space-invaders.sock
  * - Receives command: "move_left", "move_right", "shoot", "wait", or "quit"
- * - Executes action for 0.5 seconds
+ * - Executes action for ACTION_DURATION_MS milliseconds
  * - Takes screenshot
  * - Responds with: "SCREENSHOT: <path>"
  * - Waits for next command
  */
 
 const SOCKET_PATH = "/tmp/space-invaders.sock";
+const ACTION_DURATION_MS = 200; // How long to run the game before pausing and taking screenshot
 
 async function handleConnection(
   conn: Deno.Conn,
@@ -42,28 +43,28 @@ async function handleConnection(
     await page.keyboard.press("Shift+KeyP");
     await page.waitForTimeout(50);
 
-    // Execute the action for ~0.5 seconds
+    // Execute the action for ACTION_DURATION_MS
     switch (command) {
       case "move_left":
         await page.keyboard.down("ArrowLeft");
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(ACTION_DURATION_MS);
         await page.keyboard.up("ArrowLeft");
         break;
       case "move_right":
         await page.keyboard.down("ArrowRight");
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(ACTION_DURATION_MS);
         await page.keyboard.up("ArrowRight");
         break;
       case "shoot":
         await page.keyboard.press("Space");
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(ACTION_DURATION_MS);
         break;
       case "wait":
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(ACTION_DURATION_MS);
         break;
       default:
         console.log(`WARNING: Unknown command '${command}'`);
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(ACTION_DURATION_MS);
     }
 
     // Pause the game again
