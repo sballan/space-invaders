@@ -65,8 +65,8 @@ async function playGame() {
         await page.waitForTimeout(200);
       }
 
-      // Take screenshots every 2 seconds
-      if (Date.now() - startTime > screenshotCount * 2000) {
+      // Take screenshots every 1 second
+      if (Date.now() - startTime > screenshotCount * 1000) {
         screenshotCount++;
         const paddedNum = String(screenshotCount).padStart(3, '0');
         await page.screenshot({

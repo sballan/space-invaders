@@ -70,7 +70,7 @@ This script will:
 - Launch a headless browser
 - Start the game automatically
 - Simulate player actions (moving left/right, shooting)
-- Capture screenshots every 2 seconds
+- Capture screenshots every 1 second
 - Play for 60 seconds
 - Save all screenshots to a timestamped session folder:
   `temp/screenshots/session-<timestamp>/`
