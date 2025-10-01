@@ -29,7 +29,7 @@ async function sendCommand(command: string): Promise<string> {
 
     return response;
   } catch (error) {
-    return `ERROR: ${error.message}`;
+    return `ERROR: ${error instanceof Error ? error.message : String(error)}`;
   }
 }
 

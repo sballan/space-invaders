@@ -14,7 +14,7 @@ import { ensureDir } from "https://deno.land/std@0.208.0/fs/mod.ts";
  */
 
 const SOCKET_PATH = "/tmp/space-invaders.sock";
-const ACTION_DURATION_MS = 100; // How long to run the game before pausing and taking screenshot
+const ACTION_DURATION_MS = 50; // How long to run the game before pausing and taking screenshot
 
 async function handleConnection(
   conn: Deno.Conn,
@@ -41,7 +41,7 @@ async function handleConnection(
   try {
     // Unpause the game
     await page.keyboard.press("Shift+KeyP");
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(25);
 
     // Execute the action for ACTION_DURATION_MS
     switch (command) {
@@ -69,10 +69,12 @@ async function handleConnection(
 
     // Pause the game again
     await page.keyboard.press("Shift+KeyP");
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(25);
 
     // Take screenshot
-    const screenshotPath = `${sessionDir}/turn-${String(turnCounter.value).padStart(3, "0")}.png`;
+    const screenshotPath = `${sessionDir}/turn-${
+      String(turnCounter.value).padStart(3, "0")
+    }.png`;
     await page.screenshot({ path: screenshotPath });
     turnCounter.value++;
 
@@ -119,7 +121,7 @@ async function playGameInteractive() {
     await page.setViewportSize({ width: 1280, height: 720 });
 
     console.log("LOADING: Navigating to game...");
-    await page.goto("http://localhost:8001");
+    await page.goto("http://localhost:8000");
     await page.waitForTimeout(1500);
 
     // Take menu screenshot
@@ -140,14 +142,21 @@ async function playGameInteractive() {
     // Start Unix socket server
     listener = Deno.listen({ path: SOCKET_PATH, transport: "unix" });
     console.log(`LISTENING: Unix socket server at ${SOCKET_PATH}`);
-    console.log("READY: Send commands via socket (move_left, move_right, shoot, wait, quit)");
+    console.log(
+      "READY: Send commands via socket (move_left, move_right, shoot, wait, quit)",
+    );
 
     const turnCounter = { value: 0 };
     let shouldContinue = true;
 
     while (shouldContinue) {
       const conn = await listener.accept();
-      shouldContinue = await handleConnection(conn, page, sessionDir, turnCounter);
+      shouldContinue = await handleConnection(
+        conn,
+        page,
+        sessionDir,
+        turnCounter,
+      );
     }
 
     console.log(`COMPLETE: Played ${turnCounter.value} turns`);

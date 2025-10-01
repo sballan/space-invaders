@@ -193,6 +193,14 @@ export class SpaceInvadersGame {
     // Check for Shift+P (capital P)
     if (event.code === "KeyP" && event.shiftKey) {
       this.debugPaused = !this.debugPaused;
+
+      // Pause/resume the entire game engine, not just this update method
+      if (this.debugPaused) {
+        this.gameEngine.pause();
+      } else {
+        this.gameEngine.resume();
+      }
+
       console.log(
         `[DEBUG PAUSE] ${this.debugPaused ? "PAUSED" : "RESUMED"}`,
       );

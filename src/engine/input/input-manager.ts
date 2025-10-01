@@ -198,6 +198,12 @@ export class InputManager {
     if (!this.enabled) return;
 
     const key = event.code;
+
+    // Don't consume Shift+P (reserved for debug pause)
+    if (key === "KeyP" && event.shiftKey) {
+      return;
+    }
+
     this.addInputEvent({ type: "keydown", key, timestamp: performance.now() });
 
     // Prevent default behavior for game keys
@@ -210,6 +216,12 @@ export class InputManager {
     if (!this.enabled) return;
 
     const key = event.code;
+
+    // Don't consume Shift+P (reserved for debug pause)
+    if (key === "KeyP" && event.shiftKey) {
+      return;
+    }
+
     this.addInputEvent({ type: "keyup", key, timestamp: performance.now() });
 
     if (this.isGameKey(key)) {
