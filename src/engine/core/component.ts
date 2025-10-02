@@ -132,42 +132,6 @@ export interface BulletComponent extends Component {
 }
 
 /**
- * AI component - basic enemy AI behavior
- */
-export interface AIComponent extends Component {
-  readonly type: "ai";
-  /** Current AI behavior state */
-  behavior: "idle" | "patrol" | "chase" | "attack" | "flee";
-  /** Target entity ID (if any) */
-  target: number | null;
-  /** AI-specific data */
-  data: Record<string, unknown>;
-  /** Time until next AI decision */
-  nextDecisionTime: number;
-}
-
-/**
- * Animation component - sprite animation data
- */
-export interface AnimationComponent extends Component {
-  readonly type: "animation";
-  /** Current animation name */
-  currentAnimation: string;
-  /** Available animations */
-  animations: Map<string, {
-    frames: string[]; // Texture region names
-    duration: number; // Seconds per frame
-    loop: boolean;
-  }>;
-  /** Current frame index */
-  currentFrame: number;
-  /** Time accumulated for current frame */
-  frameTime: number;
-  /** Whether animation is currently playing */
-  playing: boolean;
-}
-
-/**
  * Input component - handles input for player-controlled entities
  */
 export interface InputComponent extends Component {
@@ -215,8 +179,6 @@ export type AnyComponent =
   | HealthComponent
   | WeaponComponent
   | BulletComponent
-  | AIComponent
-  | AnimationComponent
   | InputComponent
   | LifetimeComponent
   | ScoreComponent;
@@ -338,21 +300,6 @@ export const ComponentFactory = {
       owner,
       timeToLive,
       hasHit: false,
-    };
-  },
-
-  /**
-   * Creates an AI component with default values
-   */
-  createAI(
-    behavior: "idle" | "patrol" | "chase" | "attack" | "flee" = "idle",
-  ): AIComponent {
-    return {
-      type: "ai",
-      behavior,
-      target: null,
-      data: {},
-      nextDecisionTime: 0,
     };
   },
 

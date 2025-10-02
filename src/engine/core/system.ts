@@ -307,58 +307,6 @@ export class WeaponSystem extends BaseSystem {
 }
 
 /**
- * Animation system - handles sprite animation
- */
-export class AnimationSystem extends BaseSystem {
-  public readonly name = "animation";
-
-  constructor() {
-    super(30); // Medium priority
-  }
-
-  public update(deltaTime: number, entityManager: EntityManager): void {
-    const entities = this.getEntities(entityManager, "animation", "sprite");
-
-    for (const entity of entities) {
-      const animation = entity.getComponent<
-        import("./component.ts").AnimationComponent
-      >("animation")!;
-      const sprite = entity.getComponent<
-        import("./component.ts").SpriteComponent
-      >("sprite")!;
-
-      if (!animation.playing) continue;
-
-      const currentAnim = animation.animations.get(animation.currentAnimation);
-      if (!currentAnim) continue;
-
-      // Update frame timing
-      animation.frameTime += deltaTime;
-
-      if (animation.frameTime >= currentAnim.duration) {
-        animation.frameTime = 0;
-        animation.currentFrame++;
-
-        // Handle animation looping
-        if (animation.currentFrame >= currentAnim.frames.length) {
-          if (currentAnim.loop) {
-            animation.currentFrame = 0;
-          } else {
-            animation.currentFrame = currentAnim.frames.length - 1;
-            animation.playing = false;
-          }
-        }
-
-        // Update sprite texture
-        if (animation.currentFrame < currentAnim.frames.length) {
-          sprite.textureName = currentAnim.frames[animation.currentFrame];
-        }
-      }
-    }
-  }
-}
-
-/**
  * Health system - handles health updates and invulnerability
  */
 export class HealthSystem extends BaseSystem {

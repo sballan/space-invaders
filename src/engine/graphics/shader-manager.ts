@@ -318,26 +318,21 @@ export const DefaultShaders = {
     precision highp float;
 
     // Input vertex attributes
-    in vec2 a_position;    // Vertex position in screen coordinates (0-800, 0-600)
+    in vec2 a_position;    // Vertex position in screen coordinates
     in vec2 a_texCoord;    // Texture coordinates (0-1 range)
     in vec4 a_color;       // Vertex color (for tinting)
 
-    // Uniforms (keeping for compatibility but not using matrices)
-    uniform mat4 u_projection; // Not used - we do direct conversion
-    uniform mat4 u_model;      // Not used - we do direct conversion
+    // Uniforms
+    uniform mat4 u_projection; // Projection matrix for coordinate transformation
+    uniform mat4 u_model;      // Model matrix for transformations
 
     // Output to fragment shader
     out vec2 v_texCoord;   // Interpolated texture coordinates
     out vec4 v_color;      // Interpolated vertex color
 
     void main() {
-      // Convert screen coordinates to clip space directly
-      // x: 0-800 -> -1 to 1
-      // y: 0-600 -> 1 to -1 (flip Y for WebGL bottom-left origin)
-      float x = (a_position.x / 400.0) - 1.0;
-      float y = 1.0 - (a_position.y / 300.0);
-
-      gl_Position = vec4(x, y, 0.0, 1.0);
+      // Transform position using projection matrix
+      gl_Position = u_projection * u_model * vec4(a_position, 0.0, 1.0);
 
       // Pass texture coordinates and color to fragment shader
       v_texCoord = a_texCoord;

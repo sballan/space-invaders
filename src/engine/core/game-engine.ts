@@ -7,7 +7,6 @@
 import { GraphicsEngine } from "../graphics/graphics-engine.ts";
 import { EntityManager } from "./entity.ts";
 import {
-  AnimationSystem,
   HealthSystem,
   LifetimeSystem,
   MovementSystem,
@@ -136,7 +135,6 @@ export class GameEngine {
   private registerCoreSystems(): void {
     this.systemManager.registerSystem(new MovementSystem());
     this.systemManager.registerSystem(new WeaponSystem());
-    this.systemManager.registerSystem(new AnimationSystem());
     this.systemManager.registerSystem(new HealthSystem());
     this.systemManager.registerSystem(new LifetimeSystem());
   }

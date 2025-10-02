@@ -183,25 +183,6 @@ Deno.test("ComponentFactory - Bullet component", async (t) => {
   });
 });
 
-Deno.test("ComponentFactory - AI component", async (t) => {
-  await t.step("createAI - creates with specified behavior", () => {
-    const ai = ComponentFactory.createAI("chase");
-
-    assertEquals(ai.type, "ai");
-    assertEquals(ai.behavior, "chase");
-    assertEquals(ai.target, null);
-    assertEquals(typeof ai.data, "object");
-    assertEquals(ai.nextDecisionTime, 0);
-  });
-
-  await t.step("createAI - creates with default behavior", () => {
-    const ai = ComponentFactory.createAI();
-
-    assertEquals(ai.type, "ai");
-    assertEquals(ai.behavior, "idle");
-  });
-});
-
 Deno.test("ComponentFactory - Input component", async (t) => {
   await t.step("createInput - creates with specified key bindings", () => {
     const keyBindings = {

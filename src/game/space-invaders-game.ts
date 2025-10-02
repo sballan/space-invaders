@@ -66,13 +66,6 @@ export class SpaceInvadersGame {
   private playerId: number | null = null;
   private invaderFormation: { entityId: number; row: number; col: number }[] =
     [];
-  private invaderDirection = 1; // 1 = right, -1 = left
-  private invaderMoveTimer = 0;
-  private invaderShootTimer = 0;
-
-  // Game timing
-  private readonly INVADER_MOVE_INTERVAL = 1.0; // Seconds between moves
-  private readonly INVADER_SHOOT_INTERVAL = 0.0001; // Seconds between shots
 
   // Debug pause mode
   private debugPaused = false;
@@ -170,8 +163,8 @@ export class SpaceInvadersGame {
       const bullet = event.entityA.hasComponent("bullet")
         ? event.entityA
         : event.entityB.hasComponent("bullet")
-          ? event.entityB
-          : null;
+        ? event.entityB
+        : null;
 
       if (bullet) {
         bullet.destroy();
@@ -447,8 +440,9 @@ export class SpaceInvadersGame {
 
   /**
    * Updates game logic (called each frame)
+   * Note: Most game logic is now handled by SpaceInvadersSystem
    */
-  update(deltaTime: number): void {
+  update(_deltaTime: number): void {
     if (
       !this.gameStarted || this.gameEngine.getGameState() !== GameState.Running
     ) {
@@ -460,194 +454,8 @@ export class SpaceInvadersGame {
       return;
     }
 
-    // Update invader movement
-    this.updateInvaderMovement(deltaTime);
-
-    // Update invader shooting
-    this.updateInvaderShooting(deltaTime);
-
-    // Check game over conditions
-    this.checkGameOverConditions();
-
-    // Constrain player to screen bounds
-    this.constrainPlayerToScreen();
-  }
-
-  /**
-   * Updates invader formation movement
-   */
-  private updateInvaderMovement(deltaTime: number): void {
-    this.invaderMoveTimer += deltaTime;
-
-    if (this.invaderMoveTimer >= this.INVADER_MOVE_INTERVAL) {
-      this.invaderMoveTimer = 0;
-
-      const entityManager = this.gameEngine.getEntityManager();
-      let shouldMoveDown = false;
-
-      // Check if any invader hit the screen edge
-      for (const invaderData of this.invaderFormation) {
-        const entity = entityManager.getEntity(invaderData.entityId);
-        if (!entity || !entity.active) continue;
-
-        const position = entity.getComponent<
-          import("../engine/core/component.ts").PositionComponent
-        >("position")!;
-
-        if (
-          (position.position.x <= 50 && this.invaderDirection < 0) ||
-          (position.position.x >= GAME_CONFIG.SCREEN_WIDTH - 50 &&
-            this.invaderDirection > 0)
-        ) {
-          shouldMoveDown = true;
-          break;
-        }
-      }
-
-      // Move invaders
-      for (const invaderData of this.invaderFormation) {
-        const entity = entityManager.getEntity(invaderData.entityId);
-        if (!entity || !entity.active) continue;
-
-        const position = entity.getComponent<
-          import("../engine/core/component.ts").PositionComponent
-        >("position")!;
-
-        if (shouldMoveDown) {
-          // Move down and reverse direction
-          position.position.y += GAME_CONFIG.INVADER_DROP_SPEED;
-        } else {
-          // Move horizontally
-          position.position.x += this.invaderDirection *
-            GAME_CONFIG.INVADER_SPEED;
-        }
-      }
-
-      // Reverse direction if moved down
-      if (shouldMoveDown) {
-        this.invaderDirection *= -1;
-
-        // Increase speed slightly each time they drop
-        // (Note: In a more complex system, this would modify velocity components)
-      }
-    }
-  }
-
-  /**
-   * Updates invader shooting
-   */
-  private updateInvaderShooting(deltaTime: number): void {
-    this.invaderShootTimer += deltaTime;
-
-    if (this.invaderShootTimer >= this.INVADER_SHOOT_INTERVAL) {
-      this.invaderShootTimer = 0;
-
-      // Random chance for an invader to shoot
-      if (this.invaderFormation.length > 0) {
-        const randomIndex = Math.floor(
-          Math.random() * this.invaderFormation.length,
-        );
-        const invaderData = this.invaderFormation[randomIndex];
-
-        this.createInvaderBullet(invaderData.entityId);
-      }
-    }
-  }
-
-  /**
-   * Creates a bullet fired by an invader
-   */
-  private createInvaderBullet(invaderId: number): void {
-    const entityManager = this.gameEngine.getEntityManager();
-    const invader = entityManager.getEntity(invaderId);
-
-    if (!invader || !invader.active) return;
-
-    const position = invader.getComponent<
-      import("../engine/core/component.ts").PositionComponent
-    >("position")!;
-
-    const bullet = entityManager.createEntityWithComponents(
-      ComponentFactory.createPosition(
-        position.position.x,
-        position.position.y + 20,
-      ),
-      ComponentFactory.createVelocity(
-        0,
-        GAME_CONFIG.BULLET_SPEED * 0.5,
-        GAME_CONFIG.BULLET_SPEED,
-      ),
-      ComponentFactory.createSprite(
-        "__white",
-        GAME_CONFIG.BULLET_SIZE.width,
-        GAME_CONFIG.BULLET_SIZE.height,
-      ),
-      ComponentFactory.createBullet(10, invaderId, 10),
-      ComponentFactory.createLifetime(10),
-      ComponentFactory.createCollision(
-        GAME_CONFIG.BULLET_SIZE.width,
-        GAME_CONFIG.BULLET_SIZE.height,
-        ["enemy_bullet"],
-        ["player", "boundary"],
-      ),
-    );
-
-    // Set bullet color to red
-    const sprite = bullet.getComponent<
-      import("../engine/core/component.ts").SpriteComponent
-    >("sprite")!;
-    sprite.color = { r: 1, g: 0, b: 0, a: 1 };
-  }
-
-  /**
-   * Checks for game over conditions
-   */
-  private checkGameOverConditions(): void {
-    // Check if invaders reached the bottom
-    const entityManager = this.gameEngine.getEntityManager();
-
-    for (const invaderData of this.invaderFormation) {
-      const entity = entityManager.getEntity(invaderData.entityId);
-      if (!entity || !entity.active) continue;
-
-      const position = entity.getComponent<
-        import("../engine/core/component.ts").PositionComponent
-      >("position")!;
-
-      if (position.position.y >= GAME_CONFIG.SCREEN_HEIGHT - 100) {
-        this.gameOver();
-        return;
-      }
-    }
-
-    // Check if player is dead
-    if (this.lives <= 0) {
-      this.gameOver();
-    }
-  }
-
-  /**
-   * Constrains the player to stay within screen bounds
-   */
-  private constrainPlayerToScreen(): void {
-    if (!this.playerId) return;
-
-    const entityManager = this.gameEngine.getEntityManager();
-    const player = entityManager.getEntity(this.playerId);
-
-    if (!player || !player.active) return;
-
-    const position = player.getComponent<
-      import("../engine/core/component.ts").PositionComponent
-    >("position")!;
-    const halfWidth = GAME_CONFIG.PLAYER_SIZE.width / 2;
-
-    // Constrain horizontal movement
-    if (position.position.x < halfWidth) {
-      position.position.x = halfWidth;
-    } else if (position.position.x > GAME_CONFIG.SCREEN_WIDTH - halfWidth) {
-      position.position.x = GAME_CONFIG.SCREEN_WIDTH - halfWidth;
-    }
+    // All game logic is now in SpaceInvadersSystem
+    // This method is kept for potential future game-level logic
   }
 
   /**
@@ -686,11 +494,6 @@ export class SpaceInvadersGame {
 
     // Create new invader formation
     this.createInvaderFormation();
-
-    // Reset timers
-    this.invaderMoveTimer = 0;
-    this.invaderShootTimer = 0;
-    this.invaderDirection = 1;
 
     // Play level up sound (disabled for now)
     // this.audioManager.playSfx("level_up", 0.7);
