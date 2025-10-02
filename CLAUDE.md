@@ -59,6 +59,10 @@ change complete.
    - Takes a screenshot
    - Responds with the screenshot path: `SCREENSHOT: <path>`
 
+Note that claude needs to take at least 10 or so screenshots to actually get a
+sense of what the game is doing. Claude, always play the game for at least 10
+commands before stopping.
+
 **Claude's Gameplay Loop**:
 
 ```bash
