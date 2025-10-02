@@ -114,6 +114,14 @@ export interface WeaponComponent extends Component {
   damage: number;
   /** Whether the weapon can currently fire */
   canFire: boolean;
+  /** Request to fire weapon (set by input, processed by weapon system) */
+  fireRequested: boolean;
+  /** Bullet configuration */
+  bulletConfig?: {
+    width: number;
+    height: number;
+    color: { r: number; g: number; b: number; a: number };
+  };
 }
 
 /**
@@ -273,6 +281,11 @@ export const ComponentFactory = {
     maxBullets: number = 3,
     bulletSpeed: number = 200,
     damage: number = 10,
+    bulletConfig?: {
+      width: number;
+      height: number;
+      color: { r: number; g: number; b: number; a: number };
+    },
   ): WeaponComponent {
     return {
       type: "weapon",
@@ -283,6 +296,8 @@ export const ComponentFactory = {
       bulletSpeed,
       damage,
       canFire: true,
+      fireRequested: false,
+      bulletConfig,
     };
   },
 

@@ -5,6 +5,7 @@
  */
 
 import { Entity, EntityManager } from "./entity.ts";
+import { ComponentFactory } from "./component.ts";
 
 /**
  * Base interface for all systems in the ECS architecture
@@ -302,7 +303,78 @@ export class WeaponSystem extends BaseSystem {
       // Update can fire status
       weapon.canFire = weapon.timeSinceLastShot >= weapon.fireRate &&
         weapon.activeBullets < weapon.maxBullets;
+
+      // Process fire request
+      if (weapon.fireRequested && weapon.canFire) {
+        this.fireBullet(entity, entityManager);
+        weapon.fireRequested = false;
+      }
     }
+  }
+
+  /**
+   * Creates a bullet entity when a weapon fires
+   */
+  private fireBullet(
+    shooter: Entity,
+    entityManager: EntityManager,
+  ): void {
+    const position = shooter.getComponent<
+      import("./component.ts").PositionComponent
+    >("position");
+    const weapon = shooter.getComponent<
+      import("./component.ts").WeaponComponent
+    >("weapon")!;
+
+    if (!position) return;
+
+    const bulletConfig = weapon.bulletConfig || {
+      width: 4,
+      height: 8,
+      color: { r: 1, g: 1, b: 1, a: 1 },
+    };
+
+    // Create bullet entity
+    const bullet = entityManager.createEntity();
+
+    // Add bullet components
+    bullet
+      .addComponent(ComponentFactory.createPosition(
+        position.position.x,
+        position.position.y - 20,
+      ))
+      .addComponent(ComponentFactory.createVelocity(
+        0,
+        -weapon.bulletSpeed,
+        weapon.bulletSpeed,
+      ))
+      .addComponent(ComponentFactory.createSprite(
+        "__white",
+        bulletConfig.width,
+        bulletConfig.height,
+      ))
+      .addComponent(ComponentFactory.createBullet(
+        weapon.damage,
+        shooter.id,
+        5,
+      ))
+      .addComponent(ComponentFactory.createLifetime(5))
+      .addComponent(ComponentFactory.createCollision(
+        bulletConfig.width,
+        bulletConfig.height,
+        ["player_bullet"],
+        ["enemy"],
+      ));
+
+    // Set bullet color
+    const sprite = bullet.getComponent<
+      import("./component.ts").SpriteComponent
+    >("sprite")!;
+    sprite.color = bulletConfig.color;
+
+    // Update weapon state
+    weapon.timeSinceLastShot = 0;
+    weapon.activeBullets++;
   }
 }
 

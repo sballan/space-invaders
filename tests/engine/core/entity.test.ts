@@ -116,30 +116,6 @@ Deno.test("Entity - Basic functionality", async (t) => {
       assertEquals(entity.hasComponent("position"), false);
     },
   );
-
-  await t.step("clone - creates copy with new ID", () => {
-    const original = new Entity(1);
-    original.addComponent(ComponentFactory.createPosition(10, 20));
-    original.addComponent(ComponentFactory.createVelocity(5, 10));
-
-    const clone = original.clone(2);
-
-    assertEquals(clone.id, 2);
-    assertEquals(clone.active, original.active);
-    assertEquals(clone.hasComponent("position"), true);
-    assertEquals(clone.hasComponent("velocity"), true);
-
-    // Verify components are separate instances
-    const originalPos = original.getComponent<
-      import("../../../src/engine/core/component.ts").PositionComponent
-    >("position")!;
-    const clonePos = clone.getComponent<
-      import("../../../src/engine/core/component.ts").PositionComponent
-    >("position")!;
-    assert(originalPos !== clonePos);
-    assertEquals(clonePos.position.x, originalPos.position.x);
-    assertEquals(clonePos.position.y, originalPos.position.y);
-  });
 });
 
 Deno.test("EntityManager - Entity management", async (t) => {

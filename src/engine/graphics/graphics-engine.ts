@@ -18,8 +18,6 @@ export interface Camera2D {
   position: Vector2;
   /** Camera zoom level (1.0 = normal, 2.0 = 2x zoom) */
   zoom: number;
-  /** Camera rotation in radians */
-  rotation: number;
 }
 
 /**
@@ -44,7 +42,6 @@ export class GraphicsEngine {
     this.camera = {
       position: { x: 0, y: 0 },
       zoom: 1.0,
-      rotation: 0,
     };
 
     // Initialize WebGL context
@@ -116,48 +113,10 @@ export class GraphicsEngine {
   }
 
   /**
-   * Sets the camera rotation
-   */
-  setCameraRotation(rotation: number): void {
-    this.camera.rotation = rotation;
-    this.updateProjectionMatrix();
-  }
-
-  /**
    * Gets the current camera configuration
    */
   getCamera(): Camera2D {
     return { ...this.camera };
-  }
-
-  /**
-   * Converts screen coordinates to world coordinates
-   */
-  screenToWorld(screenX: number, screenY: number): Vector2 {
-    // Normalize screen coordinates to [-1, 1] range
-    const normalizedX = (screenX / this.viewportWidth) * 2 - 1;
-    const normalizedY = 1 - (screenY / this.viewportHeight) * 2; // Flip Y axis
-
-    // Apply inverse camera transformations
-    const worldX = (normalizedX / this.camera.zoom) + this.camera.position.x;
-    const worldY = (normalizedY / this.camera.zoom) + this.camera.position.y;
-
-    return { x: worldX, y: worldY };
-  }
-
-  /**
-   * Converts world coordinates to screen coordinates
-   */
-  worldToScreen(worldX: number, worldY: number): Vector2 {
-    // Apply camera transformations
-    const viewX = (worldX - this.camera.position.x) * this.camera.zoom;
-    const viewY = (worldY - this.camera.position.y) * this.camera.zoom;
-
-    // Convert to screen coordinates
-    const screenX = (viewX + 1) * this.viewportWidth * 0.5;
-    const screenY = (1 - viewY) * this.viewportHeight * 0.5;
-
-    return { x: screenX, y: screenY };
   }
 
   /**
@@ -198,15 +157,7 @@ export class GraphicsEngine {
     }
 
     const projection = Mat4.orthographic(left, right, bottom, top, -1, 1);
-
-    // Apply camera rotation if needed
-    if (this.camera.rotation !== 0) {
-      const rotation = Mat4.rotation(this.camera.rotation);
-      const rotatedProjection = Mat4.multiply(projection, rotation);
-      this.renderer.setProjection(rotatedProjection);
-    } else {
-      this.renderer.setProjection(projection);
-    }
+    this.renderer.setProjection(projection);
   }
 
   /**

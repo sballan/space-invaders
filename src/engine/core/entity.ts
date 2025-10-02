@@ -95,21 +95,6 @@ export class Entity {
     this.components.clear();
     return this;
   }
-
-  /**
-   * Creates a shallow copy of this entity with a new ID
-   */
-  clone(newId: EntityId): Entity {
-    const clone = new Entity(newId);
-    clone.active = this.active;
-
-    // Copy all components (shallow copy)
-    for (const component of this.components.values()) {
-      clone.addComponent({ ...component });
-    }
-
-    return clone;
-  }
 }
 
 /**
@@ -176,15 +161,6 @@ export class EntityManager {
   getEntitiesWithComponents(...componentTypes: string[]): Entity[] {
     return this.getActiveEntities().filter((entity) =>
       entity.hasComponents(...componentTypes)
-    );
-  }
-
-  /**
-   * Queries entities that have any of the specified component types
-   */
-  getEntitiesWithAnyComponent(...componentTypes: string[]): Entity[] {
-    return this.getActiveEntities().filter((entity) =>
-      componentTypes.some((type) => entity.hasComponent(type))
     );
   }
 

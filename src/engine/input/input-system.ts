@@ -7,7 +7,6 @@
 import { BaseSystem } from "../core/system.ts";
 import { EntityManager } from "../core/entity.ts";
 import {
-  ComponentFactory,
   InputComponent,
   VelocityComponent,
   WeaponComponent,
@@ -188,7 +187,7 @@ export class InputSystem extends BaseSystem {
   private processWeaponInput(
     entity: import("../core/entity.ts").Entity,
     inputComponent: InputComponent,
-    entityManager: EntityManager,
+    _entityManager: EntityManager,
   ): void {
     const weapon = entity.getComponent<WeaponComponent>("weapon")!;
 
@@ -196,66 +195,10 @@ export class InputSystem extends BaseSystem {
     const firePressed = this.inputManager.isActionPressed("fire");
     const fireContinuous = inputComponent.activeActions.has("fire_continuous");
 
-    if ((firePressed || fireContinuous) && weapon.canFire) {
-      this.fireBullet(entity, entityManager);
+    // Set fire request flag (WeaponSystem will handle actual bullet creation)
+    if (firePressed || fireContinuous) {
+      weapon.fireRequested = true;
     }
-  }
-
-  /**
-   * Creates a bullet entity when an entity fires
-   */
-  private fireBullet(
-    shooter: import("../core/entity.ts").Entity,
-    entityManager: EntityManager,
-  ): void {
-    const position = shooter.getComponent<
-      import("../core/component.ts").PositionComponent
-    >("position");
-    const weapon = shooter.getComponent<WeaponComponent>("weapon")!;
-
-    if (!position) return;
-
-    // Create bullet entity
-    const bullet = entityManager.createEntity();
-
-    // Add bullet components
-    bullet
-      .addComponent(ComponentFactory.createPosition(
-        position.position.x,
-        position.position.y - 20, // Spawn above the shooter
-      ))
-      .addComponent(ComponentFactory.createVelocity(
-        0,
-        -weapon.bulletSpeed, // Move upward
-        weapon.bulletSpeed,
-      ))
-      .addComponent(ComponentFactory.createSprite(
-        "__white", // Use white texture for bullet
-        4, // Small bullet width
-        8, // Small bullet height
-      ))
-      .addComponent(ComponentFactory.createBullet(
-        weapon.damage,
-        shooter.id,
-        5, // 5 second lifetime
-      ))
-      .addComponent(ComponentFactory.createLifetime(5))
-      .addComponent(ComponentFactory.createCollision(
-        4,
-        8,
-        ["player_bullet"], // Bullet collision layer
-        ["enemy"], // Can hit enemies
-      ));
-
-    // Update weapon state
-    weapon.timeSinceLastShot = 0;
-    weapon.activeBullets++;
-
-    // Set bullet color based on shooter (placeholder logic)
-    const sprite = bullet.getComponent<
-      import("../core/component.ts").SpriteComponent
-    >("sprite")!;
-    sprite.color = { r: 0, g: 1, b: 1, a: 1 }; // Cyan bullets
   }
 
   /**

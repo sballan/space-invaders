@@ -8,20 +8,8 @@ import { BaseSystem } from "../engine/core/system.ts";
 import { EntityManager } from "../engine/core/entity.ts";
 import { ComponentFactory } from "../engine/core/component.ts";
 import { GameEngine, GameState } from "../engine/core/game-engine.ts";
-
-/**
- * Game configuration constants
- */
-const GAME_CONFIG = {
-  INVADER_SPEED: 30,
-  INVADER_DROP_SPEED: 30,
-  INVADER_MOVE_INTERVAL: 1.0,
-  INVADER_SHOOT_INTERVAL: 0.1,
-  SCREEN_WIDTH: 800,
-  SCREEN_HEIGHT: 600,
-  BULLET_SPEED: 200,
-  BULLET_SIZE: { width: 8, height: 20 },
-};
+import { GAME_CONFIG } from "./config.ts";
+import { info } from "../utils/logger.ts";
 
 /**
  * Space Invaders game logic system
@@ -66,7 +54,7 @@ export class SpaceInvadersSystem extends BaseSystem {
   ): void {
     this.invaderMoveTimer += deltaTime;
 
-    if (this.invaderMoveTimer >= GAME_CONFIG.INVADER_MOVE_INTERVAL) {
+    if (this.invaderMoveTimer >= GAME_CONFIG.invader.moveInterval) {
       this.invaderMoveTimer = 0;
 
       const invaders = entityManager.getEntitiesWithComponents("collision")
@@ -89,7 +77,7 @@ export class SpaceInvadersSystem extends BaseSystem {
 
         if (
           (position.position.x <= 50 && this.invaderDirection < 0) ||
-          (position.position.x >= GAME_CONFIG.SCREEN_WIDTH - 50 &&
+          (position.position.x >= GAME_CONFIG.screen.width - 50 &&
             this.invaderDirection > 0)
         ) {
           shouldMoveDown = true;
@@ -104,10 +92,10 @@ export class SpaceInvadersSystem extends BaseSystem {
         >("position")!;
 
         if (shouldMoveDown) {
-          position.position.y += GAME_CONFIG.INVADER_DROP_SPEED;
+          position.position.y += GAME_CONFIG.invader.dropSpeed;
         } else {
           position.position.x += this.invaderDirection *
-            GAME_CONFIG.INVADER_SPEED;
+            GAME_CONFIG.invader.speed;
         }
       }
 
@@ -127,7 +115,7 @@ export class SpaceInvadersSystem extends BaseSystem {
   ): void {
     this.invaderShootTimer += deltaTime;
 
-    if (this.invaderShootTimer >= GAME_CONFIG.INVADER_SHOOT_INTERVAL) {
+    if (this.invaderShootTimer >= GAME_CONFIG.invader.shootInterval) {
       this.invaderShootTimer = 0;
 
       const invaders = entityManager.getEntitiesWithComponents("collision")
@@ -139,7 +127,9 @@ export class SpaceInvadersSystem extends BaseSystem {
         });
 
       // Random chance for an invader to shoot
-      if (Math.random() < 0.7 && invaders.length > 0) {
+      if (
+        Math.random() < GAME_CONFIG.invader.shootChance && invaders.length > 0
+      ) {
         const randomIndex = Math.floor(Math.random() * invaders.length);
         const invader = invaders[randomIndex];
 
@@ -166,29 +156,33 @@ export class SpaceInvadersSystem extends BaseSystem {
       ),
       ComponentFactory.createVelocity(
         0,
-        GAME_CONFIG.BULLET_SPEED * 0.6,
-        GAME_CONFIG.BULLET_SPEED,
+        GAME_CONFIG.bullet.enemy.speed,
+        GAME_CONFIG.bullet.enemy.speed,
       ),
       ComponentFactory.createSprite(
         "__white",
-        GAME_CONFIG.BULLET_SIZE.width,
-        GAME_CONFIG.BULLET_SIZE.height,
+        GAME_CONFIG.bullet.enemy.size.width,
+        GAME_CONFIG.bullet.enemy.size.height,
       ),
-      ComponentFactory.createBullet(10, invader.id, 10),
-      ComponentFactory.createLifetime(10),
+      ComponentFactory.createBullet(
+        GAME_CONFIG.bullet.enemy.damage,
+        invader.id,
+        GAME_CONFIG.bullet.enemy.lifetime,
+      ),
+      ComponentFactory.createLifetime(GAME_CONFIG.bullet.enemy.lifetime),
       ComponentFactory.createCollision(
-        GAME_CONFIG.BULLET_SIZE.width,
-        GAME_CONFIG.BULLET_SIZE.height,
+        GAME_CONFIG.bullet.enemy.size.width,
+        GAME_CONFIG.bullet.enemy.size.height,
         ["enemy_bullet"],
         ["player", "boundary"],
       ),
     );
 
-    // Set bullet color to red
+    // Set bullet color
     const sprite = bullet.getComponent<
       import("../engine/core/component.ts").SpriteComponent
     >("sprite")!;
-    sprite.color = { r: 1, g: 0, b: 0, a: 1 };
+    sprite.color = GAME_CONFIG.bullet.enemy.color;
   }
 
   /**
@@ -205,7 +199,7 @@ export class SpaceInvadersSystem extends BaseSystem {
 
     // Win condition - no invaders left
     if (invaders.length === 0) {
-      console.log("Level complete!");
+      info("game", "Level complete!");
       // Could trigger next level here
     }
 
@@ -214,7 +208,7 @@ export class SpaceInvadersSystem extends BaseSystem {
       const position = invader.getComponent<
         import("../engine/core/component.ts").PositionComponent
       >("position")!;
-      if (position.position.y >= GAME_CONFIG.SCREEN_HEIGHT - 100) {
+      if (position.position.y >= GAME_CONFIG.screen.height - 100) {
         this.gameEngine.setGameState(GameState.GameOver);
         return;
       }
@@ -242,8 +236,8 @@ export class SpaceInvadersSystem extends BaseSystem {
 
       if (position.position.x < halfWidth) {
         position.position.x = halfWidth;
-      } else if (position.position.x > GAME_CONFIG.SCREEN_WIDTH - halfWidth) {
-        position.position.x = GAME_CONFIG.SCREEN_WIDTH - halfWidth;
+      } else if (position.position.x > GAME_CONFIG.screen.width - halfWidth) {
+        position.position.x = GAME_CONFIG.screen.width - halfWidth;
       }
     }
   }
