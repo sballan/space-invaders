@@ -21,37 +21,6 @@ deno task test:all
 **IMPORTANT**: All tests (unit and e2e) must pass before considering any code
 change complete.
 
-### Verification Process
-
-Before asking the user to verify changes in their browser:
-
-1. **Use Playwright for Verification**: When you want to know if a change was
-   successful, use Playwright to test the functionality automatically
-2. **Create Test Scripts**: Write Playwright test scripts in `temp/tests/` to
-   verify:
-   - Visual rendering (screenshots saved to `temp/screenshots/`)
-   - Canvas pixel analysis
-   - Game functionality
-   - User interactions
-
-Example Playwright verification:
-
-```typescript
-// Create test script in temp/tests/verify-feature.js
-import { chromium } from "npm:playwright@1.40.0";
-
-async function verifyChange() {
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
-
-  await page.goto("http://localhost:8000");
-  // ... test the specific change
-
-  await page.screenshot({ path: "temp/screenshots/verification.png" });
-  await browser.close();
-}
-```
-
 ### Playing the Game with Playwright
 
 #### Interactive Gameplay (Claude Plays the Game)
@@ -117,6 +86,39 @@ deno run --allow-all send-game-command.ts quit
 - Debug specific gameplay scenarios interactively
 - Verify game balance through actual strategic gameplay
 - Create gameplay demonstrations and documentation
+
+### Special Test Cases
+
+In exceptional scenarios, it might make sense to write a quick custom script to
+see what the game is doing. Generally speaking, the interactive gameplay system
+mentioned above should be used instead.
+
+1. **Use Playwright for Verification**: When you want to know if a change was
+   successful, use Playwright to test the functionality automatically
+2. **Create Test Scripts**: Write Playwright test scripts in `temp/tests/` to
+   verify:
+   - Visual rendering (screenshots saved to `temp/screenshots/`)
+   - Canvas pixel analysis
+   - Game functionality
+   - User interactions
+
+Example Playwright verification:
+
+```typescript
+// Create test script in temp/tests/verify-feature.js
+import { chromium } from "npm:playwright@1.40.0";
+
+async function verifyChange() {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  await page.goto("http://localhost:8000");
+  // ... test the specific change
+
+  await page.screenshot({ path: "temp/screenshots/verification.png" });
+  await browser.close();
+}
+```
 
 ### Temporary File Organization
 
