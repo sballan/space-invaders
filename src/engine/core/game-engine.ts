@@ -5,6 +5,7 @@
  */
 
 import { GraphicsEngine } from "../graphics/graphics-engine.ts";
+import { RenderSystem } from "../graphics/render-system.ts";
 import { EntityManager } from "./entity.ts";
 import {
   HealthSystem,
@@ -137,6 +138,9 @@ export class GameEngine {
     this.systemManager.registerSystem(new WeaponSystem());
     this.systemManager.registerSystem(new HealthSystem());
     this.systemManager.registerSystem(new LifetimeSystem());
+    this.systemManager.registerSystem(
+      new RenderSystem(this.graphicsEngine, this.config.debug),
+    );
   }
 
   /**
@@ -341,123 +345,19 @@ export class GameEngine {
       this.fpsTimer = 0;
     }
 
-    // Only update game logic if running
+    // Update all systems (including rendering)
     if (this.gameState === GameState.Running) {
-      this.update(this.deltaTime);
-    }
-
-    // Always render (even when paused)
-    this.render();
-
-    // Schedule next frame
-    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
-  }
-
-  /**
-   * Updates game logic
-   */
-  private update(deltaTime: number): void {
-    // Update all systems
-    this.systemManager.update(deltaTime);
-  }
-
-  /**
-   * Renders the current frame
-   */
-  private render(): void {
-    const graphics = this.graphicsEngine;
-
-    // Debug: Check all entities (throttled to every 2 seconds)
-    if (this.config.debug && this.frameCount % 120 === 0) {
-      const allEntities = this.entityManager.getAllEntities();
-      const positionEntities = this.entityManager.getEntitiesWithComponents(
-        "position",
-      );
-      const spriteEntities = this.entityManager.getEntitiesWithComponents(
-        "sprite",
-      );
-      const bothEntities = this.entityManager.getEntitiesWithComponents(
-        "position",
-        "sprite",
-      );
-
-      console.log(
-        `[Frame ${this.frameCount}] Total entities: ${allEntities.length}, Position: ${positionEntities.length}, Sprite: ${spriteEntities.length}, Both: ${bothEntities.length}`,
-      );
-    }
-
-    const entities = this.entityManager.getEntitiesWithComponents(
-      "position",
-      "sprite",
-    );
-
-    // Begin frame
-    graphics.beginFrame();
-
-    // Sort entities by z-order for proper rendering
-    entities.sort((a, b) => {
-      const spriteA = a.getComponent<import("./component.ts").SpriteComponent>(
-        "sprite",
-      )!;
-      const spriteB = b.getComponent<import("./component.ts").SpriteComponent>(
-        "sprite",
-      )!;
-      return spriteA.zOrder - spriteB.zOrder;
-    });
-
-    // Debug: Log entity count (throttled)
-    if (this.config.debug && this.frameCount % 120 === 0) {
-      console.log(
-        `[Frame ${this.frameCount}] Rendering ${entities.length} entities`,
-      );
-    }
-
-    // Render all visible sprites
-    for (const entity of entities) {
-      const position = entity.getComponent<
-        import("./component.ts").PositionComponent
-      >("position")!;
-      const sprite = entity.getComponent<
-        import("./component.ts").SpriteComponent
-      >("sprite")!;
-
-      if (!sprite.visible) continue;
-
-      try {
-        // Get texture or texture region
-        const textureManager = graphics.getTextureManager();
-        let texture;
-
-        if (textureManager.hasRegion(sprite.textureName)) {
-          texture = textureManager.getRegion(sprite.textureName);
-        } else if (textureManager.hasTexture(sprite.textureName)) {
-          texture = textureManager.getTexture(sprite.textureName);
-        } else {
-          // Fallback to white texture
-          texture = textureManager.getTexture("__white");
-        }
-
-        // Render the sprite
-        graphics.drawSprite({
-          position: position.position,
-          size: sprite.size,
-          rotation: sprite.rotation,
-          color: sprite.color,
-          texture,
-          anchor: sprite.anchor,
-        });
-      } catch (error) {
-        if (this.config.debug) {
-          console.warn(
-            `Failed to render sprite for entity ${entity.id}:`,
-            error,
-          );
-        }
+      this.systemManager.update(this.deltaTime);
+    } else {
+      // When paused, still render but don't update other systems
+      const renderSystem = this.systemManager.getSystem<RenderSystem>("render");
+      if (renderSystem) {
+        renderSystem.update(0, this.entityManager);
       }
     }
 
-    // End frame
-    graphics.endFrame();
+    // Schedule next frame
+    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
   }
 
   /**

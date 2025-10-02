@@ -398,8 +398,12 @@ export class CollisionSystem extends BaseSystem {
   private resolveCollision(collision: CollisionEvent): void {
     const { entityA, entityB, normal, penetration } = collision;
 
-    const positionA = entityA.getComponent<PositionComponent>("position")!;
-    const positionB = entityB.getComponent<PositionComponent>("position")!;
+    const positionA = entityA.getComponent<PositionComponent>("position");
+    const positionB = entityB.getComponent<PositionComponent>("position");
+
+    // Skip if either entity doesn't have a position component
+    if (!positionA || !positionB) return;
+
     const velocityA = entityA.getComponent<VelocityComponent>("velocity");
     const velocityB = entityB.getComponent<VelocityComponent>("velocity");
 

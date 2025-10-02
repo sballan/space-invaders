@@ -51,6 +51,8 @@ Deno.test({
           if (response.ok) {
             serverReady = true;
             console.log("Dev server is ready!");
+            // Wait an extra second to ensure it's fully ready
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             break;
           }
         } catch {
