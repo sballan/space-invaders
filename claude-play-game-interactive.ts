@@ -14,7 +14,7 @@ import { ensureDir } from "https://deno.land/std@0.208.0/fs/mod.ts";
  */
 
 const SOCKET_PATH = "/tmp/space-invaders.sock";
-const ACTION_DURATION_MS = 50; // How long to run the game before pausing and taking screenshot
+const ACTION_DURATION_MS = 200; // How long to run the game before pausing and taking screenshot
 
 async function handleConnection(
   conn: Deno.Conn,

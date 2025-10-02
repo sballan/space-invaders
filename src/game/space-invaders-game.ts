@@ -38,9 +38,9 @@ const GAME_CONFIG = {
   INVADER_DROP_SPEED: 30,
 
   // Bullet settings
-  BULLET_SPEED: 400,
-  BULLET_SIZE: { width: 8, height: 20 }, // Made larger for visibility
-  MAX_PLAYER_BULLETS: 3,
+  BULLET_SPEED: 300,
+  BULLET_SIZE: { width: 16, height: 40 }, // Made larger for visibility
+  MAX_PLAYER_BULLETS: 6,
 
   // Game progression
   INVADER_SCORE_VALUES: [10, 20, 30, 40, 50], // Points per row (bottom to top)
@@ -72,7 +72,7 @@ export class SpaceInvadersGame {
 
   // Game timing
   private readonly INVADER_MOVE_INTERVAL = 1.0; // Seconds between moves
-  private readonly INVADER_SHOOT_INTERVAL = 2.0; // Seconds between shots
+  private readonly INVADER_SHOOT_INTERVAL = 0.0001; // Seconds between shots
 
   // Debug pause mode
   private debugPaused = false;
@@ -170,8 +170,8 @@ export class SpaceInvadersGame {
       const bullet = event.entityA.hasComponent("bullet")
         ? event.entityA
         : event.entityB.hasComponent("bullet")
-        ? event.entityB
-        : null;
+          ? event.entityB
+          : null;
 
       if (bullet) {
         bullet.destroy();
@@ -309,7 +309,7 @@ export class SpaceInvadersGame {
         "Space": "fire",
       }),
       ComponentFactory.createWeapon(
-        0.3,
+        0.05,
         GAME_CONFIG.MAX_PLAYER_BULLETS,
         GAME_CONFIG.BULLET_SPEED,
         10,
@@ -543,7 +543,7 @@ export class SpaceInvadersGame {
       this.invaderShootTimer = 0;
 
       // Random chance for an invader to shoot
-      if (Math.random() < 0.3 && this.invaderFormation.length > 0) {
+      if (this.invaderFormation.length > 0) {
         const randomIndex = Math.floor(
           Math.random() * this.invaderFormation.length,
         );
@@ -574,7 +574,7 @@ export class SpaceInvadersGame {
       ),
       ComponentFactory.createVelocity(
         0,
-        GAME_CONFIG.BULLET_SPEED * 0.6,
+        GAME_CONFIG.BULLET_SPEED * 0.5,
         GAME_CONFIG.BULLET_SPEED,
       ),
       ComponentFactory.createSprite(

@@ -16,11 +16,11 @@ const GAME_CONFIG = {
   INVADER_SPEED: 30,
   INVADER_DROP_SPEED: 30,
   INVADER_MOVE_INTERVAL: 1.0,
-  INVADER_SHOOT_INTERVAL: 2.0,
+  INVADER_SHOOT_INTERVAL: 0.1,
   SCREEN_WIDTH: 800,
   SCREEN_HEIGHT: 600,
-  BULLET_SPEED: 400,
-  BULLET_SIZE: { width: 4, height: 10 },
+  BULLET_SPEED: 200,
+  BULLET_SIZE: { width: 8, height: 20 },
 };
 
 /**
@@ -139,7 +139,7 @@ export class SpaceInvadersSystem extends BaseSystem {
         });
 
       // Random chance for an invader to shoot
-      if (Math.random() < 0.3 && invaders.length > 0) {
+      if (Math.random() < 0.7 && invaders.length > 0) {
         const randomIndex = Math.floor(Math.random() * invaders.length);
         const invader = invaders[randomIndex];
 
